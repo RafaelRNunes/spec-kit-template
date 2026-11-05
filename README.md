@@ -52,6 +52,13 @@ O checklist da própria IA pode passar tudo e deixar excessos. Antes de aprovar,
 
 Use o `/speckit-clarify` para aplicar as correções, e não rode o `/speckit-specify` de novo, porque ele cria outra pasta.
 
+## O que conferir no plano
+
+- Ferramentas e versões contra a realidade: gere o scaffold do framework em uma pasta temporária, em vez de confiar no que o plano diz que ele traz.
+- Comandos críticos, em um teste rápido. Por exemplo, `docker compose up --wait` retorna sucesso em um serviço sem healthcheck, mesmo que ele caia depois.
+- Comportamentos que a constitution manda testar e ficaram só como verificação manual ou "onde for viável".
+- Como os testes rodam em um clone novo e no CI: variáveis de ambiente, portas e dependências.
+
 ## Ajustes
 
 O limite de 2 subagentes vale para a máquina atual. Ajuste em `.claude/settings.json`.
