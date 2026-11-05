@@ -1,0 +1,10 @@
+{
+  "model": "sonnet",
+  "env": {
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "2"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash \"$(git rev-parse --show-toplevel)/.claude/statusline.sh\""
+  }
+}
