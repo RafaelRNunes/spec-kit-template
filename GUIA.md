@@ -38,7 +38,8 @@ flowchart TD
     S --> Q
     R -- Sim --> T["/speckit-converge com Sonnet"]:::ai
 
-    T --> U["/hr code: ler o código e executar"]:::human
+    T --> T2["/code-review: revisão do código pela IA"]:::ai
+    T2 --> U["/hr code: ler o código e executar"]:::human
     U --> V{"Código aprovado?"}:::human
     V -- Não --> Q
     V -- Sim --> W["Push e abertura do PR"]:::ai
@@ -114,11 +115,13 @@ A base também vira spec quando descreve um comportamento, e não uma ferramenta
 | 3 | Plano | `/speckit-plan` | IA | **Revise e aprove** |
 | 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA | Só decide se houver problema crítico ou alto |
 | 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA | - |
-| 6 | Validação da IA | Testes e revisão do código | IA | - |
+| 6 | Validação da IA | `/code-review` | IA | Decida o que corrigir |
 | 7 | Validação humana | - | Pessoa | Leia o código e execute a feature |
 | 8 | Pull request | - | IA abre | **Revise e faça o merge** |
 
 Uma etapa por vez. Você digita os comandos, e uma aprovação vale só para a etapa revisada.
+
+O Spec Kit não tem um comando de revisão de código. O `/speckit-converge` confere se o código cumpre spec, plano e tarefas, e o `/code-review`, do Claude Code, procura bugs. Os dois são necessários, porque um código pode cumprir a spec e ainda ter problemas.
 
 ### Spec
 
@@ -174,7 +177,7 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 | Spec, plano, tarefas, análise e converge | Sonnet | Subagente |
 | Dúvidas da spec | Sonnet | Conversa principal, porque depende de diálogo |
 | Implementação | Haiku, passando para Sonnet se a mesma falha persistir depois de 3 tentativas | Subagente |
-| Validação da IA | Sonnet | Subagente |
+| Validação da IA (`/code-review`) | Sonnet, o modelo da conversa principal | Conversa principal, com revisores próprios |
 | `/hr` | Haiku | Subagente |
 
 - **Perguntas:** o subagente não vê o chat. Ele devolve as perguntas, o orquestrador mostra cada uma com uma recomendação, você decide, e a decisão vai para o artefato da etapa.

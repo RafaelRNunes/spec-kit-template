@@ -20,7 +20,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 | 3 | Plano | `/speckit-plan` | IA gera, pessoa analisa e aprova |
 | 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera e só para se houver problema crítico ou alto |
 | 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA |
-| 6 | Validação da IA | Testes e revisão do próprio código | IA |
+| 6 | Validação da IA | `/code-review` da branch, antes da revisão humana. A pessoa decide o que corrigir | IA |
 | 7 | Validação humana | Leitura do código e execução | Pessoa |
 | 8 | Pull request | IA faz push e abre o PR, pessoa revisa e faz o merge | Ambos |
 
@@ -54,7 +54,7 @@ Um subagente é um agente separado, que trabalha sem ver esta conversa e devolve
 | `speckit-implement` | Subagente | Haiku |
 | `speckit-clarify` | Conversa principal | Sonnet |
 
-- A conversa principal usa Sonnet, e a validação da IA também.
+- A conversa principal usa Sonnet, e o `/code-review` roda nela.
 - No máximo dois subagentes ao mesmo tempo, para não travar a máquina. O limite está em `.claude/settings.json`.
 - O subagente segue as regras de branch e o registro de tempos, devolve um resumo curto e as perguntas em aberto, e não decide pela pessoa nem inicia a etapa seguinte.
 - Na implementação, o Haiku repete até as verificações do projeto, como lint e testes, passarem. Se a mesma falha persistir depois de 3 tentativas, ele para, registra e pergunta à pessoa se deve passar para Sonnet.
