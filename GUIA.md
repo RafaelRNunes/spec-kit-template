@@ -101,6 +101,7 @@ Antes de aprovar, confira:
 - **Arquivos do scaffold:** veja o que o CLI traz além do código. A Nest CLI 12 gera um `AGENTS.md` que orienta o uso de um serviço de terceiros.
 - **Testes:** o que a constitution manda testar não pode ficar só como verificação manual ou "onde for viável".
 - **Clone novo e CI:** de onde vêm as variáveis de ambiente, as portas e as dependências.
+- **Sua máquina:** veja se as portas do plano estão livres (`ss -ltn`). Um teste que mira a porta padrão pode até atingir o banco de outro projeto.
 
 ## 5. Subagentes e modelos
 
