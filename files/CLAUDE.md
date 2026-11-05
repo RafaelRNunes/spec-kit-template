@@ -37,7 +37,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 
 - Uma spec tem uma branch e um PR. Depois do merge, ela entrega valor pronto para produção.
 - A `main` não recebe commit direto. O que está nela funciona, passou no CI e cumpre as regras no que entrega.
-- Antes de gerar uma spec, rode `git checkout main` e `git pull` e crie a branch `feature/<nome-curto>`. Para o que não é spec, use `chore/<nome-curto>`. Se houver alterações sem commit, pare e avise a pessoa.
+- O `/speckit-specify` começa rodando `git checkout main` e `git pull` e criando a branch `feature/<nome-curto>`, e só então gera a spec nela. Para o que não é spec, use `chore/<nome-curto>`. Se houver alterações sem commit, pare e avise a pessoa.
 - Faça commit, push ou PR apenas quando a etapa do fluxo pedir, nunca na `main`. O merge é sempre da pessoa.
 - Faça commits pequenos: um ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo de tarefas. O push e o PR ficam para a etapa 8.
 - Mensagens de commit e títulos de PR usam `tipo: descrição`, no presente do indicativo e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.

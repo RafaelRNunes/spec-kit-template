@@ -14,8 +14,7 @@ flowchart TD
     B --> C["/hr constitution: revisar as regras"]:::human
     C --> D["Definir a ordem das specs"]:::human
 
-    D --> E["Atualizar a main e criar a branch feature/nome"]:::ai
-    E --> F["/speckit-specify"]:::ai
+    D --> F["/speckit-specify: cria a branch a partir da main atualizada e gera a spec"]:::ai
     F --> G["/hr spec: revisar a spec"]:::human
     G --> H["/speckit-clarify: aplicar correções e decisões"]:::human
     H --> I{"Spec aprovada?"}:::human
@@ -49,7 +48,7 @@ flowchart TD
     Z -- Não --> Q
     Z -- Sim --> AA["Merge feito pela pessoa"]:::human
     AA --> AB{"Há outra spec?"}:::human
-    AB -- Sim --> E
+    AB -- Sim --> F
     AB -- Não --> AC["Fim"]:::human
 
     classDef human fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
@@ -122,6 +121,8 @@ A base também vira spec quando descreve um comportamento, e não uma ferramenta
 Uma etapa por vez. Você digita os comandos, e uma aprovação vale só para a etapa revisada.
 
 ### Spec
+
+O próprio `/speckit-specify` cria a branch a partir da `main` atualizada, seguindo a regra do `CLAUDE.md`, para a spec já nascer nela.
 
 ```text
 /speckit-specify <Nome da capacidade>. <Quem> consegue <fazer o quê>, e <o que acontece
