@@ -5,7 +5,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 ## Regras de colaboração
 
 - A pessoa digita os comandos `/speckit-*`. Não execute um comando do Spec Kit que ela não pediu, nem gere os artefatos dele por conta própria.
-- Faça uma etapa por vez. Ao terminar, pare e peça a revisão só daquela etapa.
+- Faça uma etapa por vez. Os pontos de parada obrigatórios, com revisão da pessoa, são a spec (depois do clarify), o plano e o PR. `/speckit-tasks` e `/speckit-analyze` seguem sem parar, a pessoa digita os dois comandos, e a IA só para se o analyze apontar problema crítico.
 - Uma aprovação vale apenas para a etapa revisada. "Segue" não autoriza as etapas seguintes.
 - Uma decisão sem resposta explícita continua em aberto. Pergunte, com a sua recomendação, em vez de aplicá-la.
 - Explique um termo novo antes de usá-lo.
@@ -18,7 +18,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 | 1 | Especificação | `/speckit-specify` | Pessoa e IA |
 | 2 | Dúvidas da spec | `/speckit-clarify` | IA pergunta, pessoa responde |
 | 3 | Plano | `/speckit-plan` | IA gera, pessoa analisa e aprova |
-| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera, pessoa confere |
+| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera e só para se houver problema crítico |
 | 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA |
 | 6 | Validação da IA | Testes e revisão do próprio código | IA |
 | 7 | Validação humana | Leitura do código e execução | Pessoa |
@@ -64,7 +64,7 @@ Registre também, em cada etapa, sem estimar:
 
 - **Consumo de 5 horas e semanal, no início e no fim:** leia de `.claude/consumo.local.json`, gravado pela status line. Se o valor estiver `null` ou o arquivo não existir, escreva "não medido".
   - **Início:** quem executa a etapa lê o arquivo antes de começar. Em etapas com `context: fork`, é o próprio subagente.
-  - **Fim:** a conversa principal lê o arquivo depois do resultado. Se `atualizado_em` for anterior ao fim da etapa, escreva "não medido" em vez de usar o valor antigo. A status line só regrava o arquivo depois de uma nova mensagem da IA. Portanto, a leitura do fim deve ser feita em uma mensagem posterior à que marca o horário de fim.
+  - **Fim:** a status line só regrava o arquivo depois de uma nova mensagem da IA. Por isso, o consumo do fim e o tempo humano pendentes são preenchidos no início da etapa seguinte, sem mensagem só para isso. O tempo humano vai do fim da etapa anterior ao início da seguinte, então é um limite máximo, que inclui pausas. Se `atualizado_em` for anterior ao fim da etapa, escreva "não medido" em vez de usar o valor antigo.
 - **Tokens por modelo:** rode `.claude/tokens-por-modelo.py "<início>" "<fim>"` com os horários da etapa e copie o resultado. Se não houver dados, escreva "não medido".
 
 Registre em `docs/diario.md` o que realmente aconteceu: o que a IA propôs, o que a pessoa mudou e por quê, surpresas e erros. Não invente nem suavize nada.
