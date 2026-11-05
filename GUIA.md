@@ -59,7 +59,7 @@ Exemplo: serviço no ar, logs, métricas, cadastro, consulta, atualização.
 | 1 | Especificação | `/speckit-specify` | IA, com sua descrição | Descreva comportamento, sem tecnologia |
 | 2 | Dúvidas | `/speckit-clarify` | IA pergunta | **Revise a spec e decida** |
 | 3 | Plano | `/speckit-plan` | IA | **Revise e aprove** |
-| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA | Só decide se houver problema crítico |
+| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA | Só decide se houver problema crítico ou alto |
 | 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA | - |
 | 6 | Validação da IA | Testes e revisão do código | IA | - |
 | 7 | Validação humana | - | Pessoa | Leia o código e execute a feature |

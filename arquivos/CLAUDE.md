@@ -5,7 +5,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 ## Regras de colaboração
 
 - A pessoa digita os comandos `/speckit-*`. Não execute um comando do Spec Kit que ela não pediu, nem gere os artefatos dele por conta própria.
-- Faça uma etapa por vez. Os pontos de parada obrigatórios, com revisão da pessoa, são a spec (depois do clarify), o plano e o PR. `/speckit-tasks` e `/speckit-analyze` seguem sem parar, a pessoa digita os dois comandos, e a IA só para se o analyze apontar problema crítico.
+- Faça uma etapa por vez. Os pontos de parada obrigatórios, com revisão da pessoa, são a spec (depois do clarify), o plano e o PR. `/speckit-tasks` e `/speckit-analyze` seguem sem parar, a pessoa digita os dois comandos, e a IA só para se o analyze apontar problema crítico ou de severidade alta.
 - Uma aprovação vale apenas para a etapa revisada. "Segue" não autoriza as etapas seguintes.
 - Uma decisão sem resposta explícita continua em aberto. Pergunte, com a sua recomendação, em vez de aplicá-la.
 - Explique um termo novo antes de usá-lo.
@@ -18,7 +18,7 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 | 1 | Especificação | `/speckit-specify` | Pessoa e IA |
 | 2 | Dúvidas da spec | `/speckit-clarify` | IA pergunta, pessoa responde |
 | 3 | Plano | `/speckit-plan` | IA gera, pessoa analisa e aprova |
-| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera e só para se houver problema crítico |
+| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera e só para se houver problema crítico ou alto |
 | 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA |
 | 6 | Validação da IA | Testes e revisão do próprio código | IA |
 | 7 | Validação humana | Leitura do código e execução | Pessoa |
