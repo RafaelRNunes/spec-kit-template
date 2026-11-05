@@ -58,7 +58,7 @@ Liste aqui a ordem das specs. Os detalhes são decididos nas etapas do fluxo, e 
 
 ## Registro
 
-Ao iniciar e ao terminar cada etapa, obtenha o horário real com o comando `date` e registre em `docs/tempos.md`. Separe o tempo da IA do tempo humano e não estime valores. O tempo humano exato vem de `docs/revisao-humana.md`, marcado pela pessoa com `/revisao-inicio <etapa>` e `/revisao-fim`. Sem essa marcação, ele é só um limite máximo.
+Ao iniciar e ao terminar cada etapa, obtenha o horário real com o comando `date` e registre em `docs/tempos.md`. Separe o tempo da IA do tempo humano e não estime valores. O tempo humano exato vem de `docs/human-review.md`, marcado pela pessoa com `/hr <etapa>` e `/hr end`. Sem essa marcação, ele é só um limite máximo.
 
 Registre também, em cada etapa, sem estimar:
 

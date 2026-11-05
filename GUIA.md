@@ -132,7 +132,7 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 A IA preenche a cada etapa, seguindo o `CLAUDE.md`:
 
 - **`docs/tempos.md`:** horários reais, tempo da IA, consumo e tokens por modelo.
-- **`docs/revisao-humana.md`:** o tempo exato de revisão. Rode `/revisao-inicio spec` ao começar e `/revisao-fim` ao terminar. Para uma pausa, rode os dois de novo. Sem essa marcação, o tempo humano é só um limite máximo.
+- **`docs/human-review.md`:** o tempo exato de revisão. Rode `/hr spec` ao começar (ou `plan`, `code`, `pr`) e `/hr end` ao terminar. Para uma pausa, rode `/hr end` e, depois, a etapa de novo. Sem essa marcação, o tempo humano é só um limite máximo.
 - **`docs/diario.md`:** o que a IA propôs, o que você mudou e por quê, surpresas e erros.
 
 Os percentuais são da conta inteira e arredondados. Para comparar etapas, use os tokens e deixe só a sessão do projeto ativa durante a etapa.
