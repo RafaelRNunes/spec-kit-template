@@ -97,7 +97,8 @@ simples, sem antecipar as specs seguintes.
 Antes de aprovar, confira:
 
 - **Ferramentas:** gere o scaffold do framework em uma pasta temporária, em vez de confiar no que o plano diz que ele traz. Na referência, o plano citava Jest e ESLint, mas o CLI gerava Vitest e oxlint.
-- **Comandos críticos:** faça um teste rápido. Por exemplo, `docker compose up --wait` retorna sucesso em um serviço sem healthcheck, mesmo que ele caia depois.
+- **Comandos críticos:** faça um teste rápido. Por exemplo, `docker compose up --wait` retorna sucesso em um serviço sem healthcheck, mesmo que ele caia depois. E um app NestJS com `enableShutdownHooks()` que recebe `SIGTERM` saiu com 143 como processo filho e com 0 como PID 1 no contêiner, então o teste precisa esperar o resultado do ambiente em que roda.
+- **Arquivos do scaffold:** veja o que o CLI traz além do código. A Nest CLI 12 gera um `AGENTS.md` que orienta o uso de um serviço de terceiros.
 - **Testes:** o que a constitution manda testar não pode ficar só como verificação manual ou "onde for viável".
 - **Clone novo e CI:** de onde vêm as variáveis de ambiente, as portas e as dependências.
 
