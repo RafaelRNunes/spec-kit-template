@@ -25,6 +25,7 @@ O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copi
 | `.claude/skills/speckit-*/SKILL.md` | Subagente e modelo de cada etapa |
 | `.claude/statusline.sh` | Grava os percentuais de 5 horas e semanal em um arquivo local |
 | `.claude/tokens-por-modelo.py` | Soma os tokens por modelo em um intervalo |
+| `/revisao-inicio` e `/revisao-fim` | Medem o tempo real de revisão humana em `docs/revisao-humana.md` |
 | `.github/pull_request_template.md` | Corpo padrão do PR |
 | `docs/tempos.md` e `docs/diario.md` | Registros de cada etapa |
 | `.specify/init-options.json` | Numeração das specs por horário |

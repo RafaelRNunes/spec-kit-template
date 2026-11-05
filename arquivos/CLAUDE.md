@@ -48,7 +48,7 @@ Um subagente é um agente separado, que trabalha sem ver esta conversa e devolve
 - A conversa principal usa Sonnet, e a validação da IA também.
 - No máximo dois subagentes ao mesmo tempo, para não travar a máquina. O limite está em `.claude/settings.json`.
 - O subagente segue as regras de branch e o registro de tempos, devolve um resumo curto e as perguntas em aberto, e não decide pela pessoa nem inicia a etapa seguinte.
-- O Haiku na implementação é um teste: se houver retrabalho, registre e pergunte à pessoa se devemos trocar para Sonnet.
+- Na implementação, o Haiku repete até lint e testes passarem. Se a mesma falha persistir depois de 3 tentativas, ele para, registra e pergunta à pessoa se deve passar para Sonnet.
 
 Perguntas de subagentes: a conversa principal é o orquestrador. Ela mostra cada pergunta em aberto com uma recomendação, e a pessoa decide. Depois, grava a decisão no artefato da etapa antes de seguir, porque o próximo subagente não vê o chat. Perguntas da spec vão para o `/speckit-clarify`. Não rode `/speckit-specify` de novo para responder a uma pergunta, pois ele cria outra pasta de spec.
 
@@ -58,7 +58,7 @@ Liste aqui a ordem das specs. Os detalhes são decididos nas etapas do fluxo, e 
 
 ## Registro
 
-Ao iniciar e ao terminar cada etapa, obtenha o horário real com o comando `date` e registre em `docs/tempos.md`. Separe o tempo da IA do tempo humano e não estime valores.
+Ao iniciar e ao terminar cada etapa, obtenha o horário real com o comando `date` e registre em `docs/tempos.md`. Separe o tempo da IA do tempo humano e não estime valores. O tempo humano exato vem de `docs/revisao-humana.md`, marcado pela pessoa com `/revisao-inicio <etapa>` e `/revisao-fim`. Sem essa marcação, ele é só um limite máximo.
 
 Registre também, em cada etapa, sem estimar:
 

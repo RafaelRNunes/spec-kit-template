@@ -2,7 +2,7 @@
 
 Passo a passo para criar um projeto com Spec Kit e Claude Code: a IA propõe e executa, e a pessoa decide.
 
-**Situação:** em validação, a partir do `nestjs-spec-kit-api`. Já funcionou em uma spec real: `/speckit-specify` e `/speckit-plan` em subagente com Sonnet, e `/speckit-clarify` na conversa principal. Ainda falta validar o Haiku na implementação, o limite de subagentes e um ciclo completo até o merge.
+**Situação:** em validação, a partir do `nestjs-spec-kit-api`. Já funcionou em uma spec real: `/speckit-specify` e `/speckit-plan` em subagente com Sonnet, e `/speckit-clarify` na conversa principal. O Haiku implementou 36 tarefas de uma spec simples, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, os comandos de revisão e um ciclo completo até o merge.
 
 ## 1. Preparar o projeto
 
@@ -113,7 +113,7 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 | Constitution | Opus | Subagente |
 | Spec, plano, tarefas, análise e converge | Sonnet | Subagente |
 | Dúvidas da spec | Sonnet | Conversa principal, porque depende de diálogo |
-| Implementação | Haiku, em teste; Sonnet se houver retrabalho | Subagente |
+| Implementação | Haiku, passando para Sonnet se a mesma falha persistir depois de 3 tentativas | Subagente |
 | Validação da IA | Sonnet | Subagente |
 
 - **Perguntas:** o subagente não vê o chat. Ele devolve as perguntas, o orquestrador mostra cada uma com uma recomendação, você decide, e a decisão vai para o artefato da etapa.
@@ -131,7 +131,8 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 
 A IA preenche a cada etapa, seguindo o `CLAUDE.md`:
 
-- **`docs/tempos.md`:** horários reais, tempo da IA, tempo humano, consumo e tokens por modelo. O tempo humano é um limite máximo, porque inclui pausas.
+- **`docs/tempos.md`:** horários reais, tempo da IA, consumo e tokens por modelo.
+- **`docs/revisao-humana.md`:** o tempo exato de revisão. Rode `/revisao-inicio spec` ao começar e `/revisao-fim` ao terminar. Para uma pausa, rode os dois de novo. Sem essa marcação, o tempo humano é só um limite máximo.
 - **`docs/diario.md`:** o que a IA propôs, o que você mudou e por quê, surpresas e erros.
 
 Os percentuais são da conta inteira e arredondados. Para comparar etapas, use os tokens e deixe só a sessão do projeto ativa durante a etapa.
