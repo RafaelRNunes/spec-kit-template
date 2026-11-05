@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Grava o consumo informado pelo Claude Code em um arquivo local e o mostra na status line.
-# Um campo ausente fica null no arquivo: o Claude Code só envia rate_limits para assinantes
-# e depois da primeira resposta da sessão.
+# Writes the usage reported by Claude Code to a local file and shows it in the status line.
+# A missing field becomes null: Claude Code only sends rate_limits to subscribers and after
+# the first response of the session.
 
 dir="$(cd "$(dirname "$0")" && pwd)"
 input="$(cat)"
 
-tmp="$(mktemp "$dir/.consumo.XXXXXX")" || exit 0
+tmp="$(mktemp "$dir/.usage.XXXXXX")" || exit 0
 if printf '%s' "$input" | jq --arg at "$(date '+%Y-%m-%d %H:%M:%S')" '{
-  atualizado_em: $at,
+  updated_at: $at,
   five_hour_used_percentage: .rate_limits.five_hour.used_percentage,
   seven_day_used_percentage: .rate_limits.seven_day.used_percentage
 }' >"$tmp"; then
-  mv "$tmp" "$dir/consumo.local.json"
+  mv "$tmp" "$dir/usage.local.json"
 else
   rm -f "$tmp"
   exit 0

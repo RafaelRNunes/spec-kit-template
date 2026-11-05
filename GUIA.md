@@ -1,13 +1,65 @@
 # Guia: do diretório vazio ao primeiro PR
 
-Passo a passo para criar um projeto com Spec Kit e Claude Code: a IA propõe e executa, e a pessoa decide.
+Passo a passo para criar qualquer projeto com Spec Kit e Claude Code, em qualquer linguagem ou framework: a IA propõe e executa, e a pessoa decide.
 
-**Situação:** em validação, a partir do `nestjs-spec-kit-api`. Já funcionou em uma spec real: `/speckit-specify` e `/speckit-plan` em subagente com Sonnet, e `/speckit-clarify` na conversa principal. O Haiku implementou 36 tarefas de uma spec simples, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, os comandos de revisão e um ciclo completo até o merge.
+**Situação:** em validação. Já funcionou em uma spec real: especificação e plano em subagente com Sonnet, dúvidas na conversa principal e implementação de 36 tarefas com Haiku, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, o comando `/hr` e um ciclo completo até o merge.
+
+## Fluxo
+
+Em azul, o que a pessoa faz; em verde, o que a IA faz.
+
+```mermaid
+flowchart TD
+    A["./apply.sh e primeiro commit"]:::human --> B["/speckit-constitution"]:::ai
+    B --> C["/hr constitution: revisar as regras"]:::human
+    C --> D["Definir a ordem das specs"]:::human
+
+    D --> E["Atualizar a main e criar a branch feature/nome"]:::ai
+    E --> F["/speckit-specify"]:::ai
+    F --> G["/hr spec: revisar a spec"]:::human
+    G --> H["/speckit-clarify: aplicar correções e decisões"]:::human
+    H --> I{"Spec aprovada?"}:::human
+    I -- Não --> H
+    I -- Sim --> J["/speckit-plan"]:::ai
+
+    J --> K["/hr plan: revisar e conferir o plano"]:::human
+    K --> L{"Plano aprovado?"}:::human
+    L -- Não --> M["IA corrige o plano"]:::ai
+    M --> K
+    L -- Sim --> N["/speckit-tasks e /speckit-analyze"]:::ai
+
+    N --> O{"Problema crítico ou alto?"}:::ai
+    O -- Sim --> P["Pessoa decide, e a IA corrige"]:::human
+    P --> N
+    O -- Não --> Q["/speckit-implement com Haiku"]:::ai
+
+    Q --> R{"Lint e testes passam?"}:::ai
+    R -- "Não, até 3 tentativas" --> Q
+    R -- "Falha persistente" --> S["Pessoa decide se passa para Sonnet"]:::human
+    S --> Q
+    R -- Sim --> T["/speckit-converge com Sonnet"]:::ai
+
+    T --> U["/hr code: ler o código e executar"]:::human
+    U --> V{"Código aprovado?"}:::human
+    V -- Não --> Q
+    V -- Sim --> W["Push e abertura do PR"]:::ai
+    W --> X["CI roda em cada PR"]:::ai
+    X --> Y["/hr pr: revisar o PR e o CI"]:::human
+    Y --> Z{"Aprovado?"}:::human
+    Z -- Não --> Q
+    Z -- Sim --> AA["Merge feito pela pessoa"]:::human
+    AA --> AB{"Há outra spec?"}:::human
+    AB -- Sim --> E
+    AB -- Não --> AC["Fim"]:::human
+
+    classDef human fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+    classDef ai fill:#dcfce7,stroke:#15803d,color:#14532d
+```
 
 ## 1. Preparar o projeto
 
 ```bash
-./aplicar.sh ../meu-projeto
+./apply.sh ../meu-projeto
 cd ../meu-projeto
 ```
 
@@ -24,33 +76,35 @@ cd ../meu-projeto
 
 ## 2. Definir a constitution
 
-Rode `/speckit-constitution` com regras que valem para todas as features e dá para verificar. Pode citar as ferramentas já decididas.
+Rode `/speckit-constitution` com regras que valem para todas as features e dá para verificar. Pode citar as ferramentas já decididas. Troque o que está entre `<>`:
 
 ```text
-/speckit-constitution API com NestJS, Express e TypeORM. A documentação oficial e o que a
-Nest CLI gera são a referência, e desvios precisam de justificativa. Controllers não têm
-regra de negócio. Todo comportamento novo tem teste. Testes unitários isolam dependências
-externas com mocks, e testes de integração usam o banco real. Lint e testes rodam no CI
-em cada PR. Nenhuma abstração sem um problema atual que a justifique.
+/speckit-constitution Projeto de <propósito> com <linguagem, framework e ferramentas já
+decididas>. A documentação oficial e o que o CLI do framework gera são a referência, e
+desvios precisam de justificativa. Código em inglês e documentação em português. Todo
+comportamento novo tem teste: testes unitários isolam dependências externas com mocks, e
+testes de integração usam as dependências reais. Lint e testes rodam no CI em cada PR.
+Nenhuma abstração sem um problema atual que a justifique. Regras do projeto: <regras
+específicas e verificáveis da arquitetura>.
 ```
 
 Para decidir se uma regra entra, pergunte:
 
 - Vale para todas as features? Se não, vai para a spec ou o plano.
-- Dá para apontar uma violação no código ou no plano? "Controllers sem regra de negócio" dá; "usar Clean Code" não.
+- Dá para apontar uma violação no código ou no plano? "Toda regra de negócio fica fora da camada de entrada" dá; "usar Clean Code" não.
 - Eu rejeitaria um PR por causa dela? Se não, é preferência.
 
-Não fique polindo: a constitution pode ser alterada depois, rodando o comando de novo. Na referência, ela consumiu mais rodadas de revisão do que qualquer outra etapa.
+Não fique polindo: a constitution pode ser alterada depois, rodando o comando de novo. Nossa primeira levou muitas rodadas de revisão.
 
 ## 3. Dividir em specs
 
 Regra: **uma spec = uma branch = um PR = valor pronto para produção.**
 
-- Comece pela base do serviço, que cria o projeto, e siga com uma capacidade por spec.
+- A primeira spec cria o projeto e a base. Depois, vá para uma capacidade por spec.
 - Cada biblioteca entra na spec que a usa.
 - "Pronto" significa que funciona, passou no CI e cumpre as regras no que entrega. O restante segue a ordem das specs.
 
-Exemplo: serviço no ar, logs, métricas, cadastro, consulta, atualização.
+A base também vira spec quando descreve um comportamento, e não uma ferramenta. As tarefas de criar o projeto com o CLI e de configurar o CI aparecem depois, em `tasks.md`.
 
 ## 4. Ciclo de cada spec
 
@@ -69,19 +123,16 @@ Uma etapa por vez. Você digita os comandos, e uma aprovação vale só para a e
 
 ### Spec
 
-Infraestrutura também vira spec, se descrever o comportamento:
-
 ```text
-/speckit-specify Serviço no ar. A equipe sobe o serviço e o banco de dados com um único
-comando e confirma que os dois estão saudáveis. Toda mudança proposta passa por verificação
-automática antes do merge. Fora do escopo: regras de negócio, logs e métricas.
+/speckit-specify <Nome da capacidade>. <Quem> consegue <fazer o quê>, e <o que acontece
+nos casos de erro>. Fora do escopo: <o que fica para as próximas specs>.
 ```
 
 O checklist da própria IA pode passar tudo e deixar excessos. Antes de aprovar, confira:
 
 - Requisitos e metas que você não pediu, como "100% das tentativas" ou prazos sem origem.
 - O que a sua infraestrutura não consegue cumprir, como bloquear merge em repositório privado sem GitHub Pro.
-- Código próprio para o que a ferramenta já faz, como mensagens de erro de porta em uso.
+- Código próprio para o que a ferramenta já faz, como mensagens de erro que ela já dá.
 - Frases ambíguas, como "voltar ao estado anterior", que podem esconder uma decisão.
 
 Aplique as correções com `/speckit-clarify`. Não rode `/speckit-specify` de novo, porque ele cria outra pasta.
@@ -89,21 +140,29 @@ Aplique as correções com `/speckit-clarify`. Não rode `/speckit-specify` de n
 ### Plano
 
 ```text
-/speckit-plan Use PostgreSQL com Docker Compose e GitHub Actions no CI. Siga a documentação
-oficial e o que o CLI do framework gera, e justifique cada biblioteca. Mantenha o plano
-simples, sem antecipar as specs seguintes.
+/speckit-plan Use <decisões técnicas ainda abertas>. Siga a documentação oficial e o que o
+CLI do framework gera, e justifique cada biblioteca. Mantenha o plano simples, sem
+antecipar as specs seguintes.
 ```
 
 Antes de aprovar, confira:
 
-- **Ferramentas:** gere o scaffold do framework em uma pasta temporária, em vez de confiar no que o plano diz que ele traz. Na referência, o plano citava Jest e ESLint, mas o CLI gerava Vitest e oxlint.
-- **Comandos críticos:** faça um teste rápido. Por exemplo, `docker compose up --wait` retorna sucesso em um serviço sem healthcheck, mesmo que ele caia depois. E um app NestJS com `enableShutdownHooks()` que recebe `SIGTERM` saiu com 143 como processo filho e com 0 como PID 1 no contêiner, então o teste precisa esperar o resultado do ambiente em que roda.
-- **Arquivos do scaffold:** veja o que o CLI traz além do código. A Nest CLI 12 gera um `AGENTS.md` que orienta o uso de um serviço de terceiros.
+- **Ferramentas:** gere o scaffold do framework em uma pasta temporária, em vez de confiar no que o plano diz que ele traz. Já vimos um plano citar ferramentas que a versão atual do CLI não gerava mais.
+- **Comandos críticos:** faça um teste rápido do que o plano assume. Já vimos um comando de "esperar ficar pronto" retornar sucesso em um serviço que caiu logo depois, e um mesmo processo sair com códigos diferentes conforme o ambiente.
+- **Arquivos do scaffold:** veja o que o CLI traz além do código, como instruções para IA ou serviços de terceiros que você não escolheu.
 - **Testes:** o que a constitution manda testar não pode ficar só como verificação manual ou "onde for viável".
 - **Clone novo e CI:** de onde vêm as variáveis de ambiente, as portas e as dependências.
-- **Sua máquina:** veja se as portas do plano estão livres (`ss -ltn`). Um teste que mira a porta padrão pode até atingir o banco de outro projeto.
+- **Sua máquina:** veja se as portas do plano estão livres (`ss -ltn`). Um teste que mira a porta padrão pode até atingir o serviço de outro projeto.
 
-## 5. Subagentes e modelos
+## 5. Convenções
+
+- **Idioma:** código em inglês; documentação, specs, planos, commits e PRs em português.
+- **Referência:** a documentação oficial e o que o CLI do framework gera. Desvios ficam justificados no Complexity Tracking do plano.
+- **Testes:** unitários isolam dependências externas com mocks, e os de integração usam as dependências reais.
+- **Simplicidade:** nenhuma abstração, camada ou dependência sem um problema atual.
+- **Segredos:** nunca no repositório.
+
+## 6. Subagentes e modelos
 
 Cada comando digitado roda direto no subagente, configurado no frontmatter da skill com `context: fork`, `background: false` e `model`. Isso mantém a conversa principal pequena e usa um modelo adequado a cada tarefa.
 
@@ -115,19 +174,20 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 | Dúvidas da spec | Sonnet | Conversa principal, porque depende de diálogo |
 | Implementação | Haiku, passando para Sonnet se a mesma falha persistir depois de 3 tentativas | Subagente |
 | Validação da IA | Sonnet | Subagente |
+| `/hr` | Haiku | Subagente |
 
 - **Perguntas:** o subagente não vê o chat. Ele devolve as perguntas, o orquestrador mostra cada uma com uma recomendação, você decide, e a decisão vai para o artefato da etapa.
-- **Máquina:** o modelo roda nos servidores, mas build, testes e Docker rodam localmente. Ajuste `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` em `.claude/settings.json`. Aqui usamos 2, e ainda não sabemos se esse limite cobre skills com fork.
+- **Máquina:** o modelo roda nos servidores, mas build, testes e contêineres rodam localmente. Ajuste `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` em `.claude/settings.json`. O padrão do modelo é 2, e ainda não sabemos se esse limite cobre skills com fork.
 - **Atualização do Spec Kit:** pode sobrescrever o frontmatter. Confira com `git diff` e reaplique.
 
-## 6. Limites do plano
+## 7. Limites do plano
 
 - Eles medem consumo, não horas: uma janela de 5 horas, que começa na primeira mensagem, e um limite semanal.
 - São compartilhados entre os modelos e com o Claude no navegador, no desktop e no celular. A Anthropic não publica o tamanho deles e pode ajustá-los.
 - O consumo depende do modelo, do esforço e do tamanho do contexto. Cada subagente faz as próprias requisições, que contam no mesmo limite.
 - Use `/usage` para acompanhar e `/clear` ou uma sessão nova entre tarefas para reduzir o contexto.
 
-## 7. Registros
+## 8. Registros
 
 A IA preenche a cada etapa, seguindo o `CLAUDE.md`:
 
@@ -137,16 +197,16 @@ A IA preenche a cada etapa, seguindo o `CLAUDE.md`:
 
 Os percentuais são da conta inteira e arredondados. Para comparar etapas, use os tokens e deixe só a sessão do projeto ativa durante a etapa.
 
-## 8. Git
+## 9. Git
 
 - Branches a partir da `main` atualizada: `feature/<nome-curto>` para specs e `chore/<nome-curto>` para o resto.
 - A `main` não recebe commit direto.
 - Um commit ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo. Push e PR ficam para o final.
-- Commits e títulos de PR usam `tipo: descrição`: `feat`, `fix`, `docs`, `test`, `refactor` ou `chore`.
+- Commits e títulos de PR usam `tipo: descrição`, no presente e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.
 - O corpo do PR segue `.github/pull_request_template.md`.
 - As specs são numeradas por horário, para evitar número repetido em trabalho paralelo.
 - Repositório privado sem GitHub Pro não permite proteger a branch, e você não consegue aprovar um PR aberto com a própria conta. Nesse caso, o merge vale como aprovação.
 
-## 9. Quando automatizar mais
+## 10. Quando automatizar mais
 
 Só depois de validar o fluxo com dados de tempo, consumo e retrabalho. Comece por tarefas de baixo risco, como testes e dependências. Cada spec depende do merge da anterior, então um loop entre specs para nesse ponto.
