@@ -24,6 +24,18 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 | 7 | Validação humana | Leitura do código e execução | Pessoa |
 | 8 | Pull request | IA faz push e abre o PR, pessoa revisa e faz o merge | Ambos |
 
+Uma spec é pequena: entrega valor sozinha e é fácil de revisar. Se o specify gerar muitas histórias ou o plano ficar grande, sugira dividir em specs que ainda entreguem valor cada uma.
+
+## Mudanças sem spec
+
+O fluxo completo é para comportamento novo. O resto entra por um PR direto, com CI e revisão, e o histórico fica nos commits e no PR:
+
+- **Bug:** a spec já diz como deveria funcionar. O PR cita o requisito, por exemplo `RF-009`, e traz um teste que falha sem a correção.
+- **Ajuste sem comportamento novo** (visual, refatoração, dependência, configuração): o PR diz o que mudou e por quê.
+- **Mudança de comportamento de uma feature existente:** atualize o `spec.md` dela no mesmo PR. Se a mudança for grande, abra uma spec nova.
+
+Em caso de dúvida, pergunte à pessoa qual caminho seguir.
+
 ## Convenções
 
 - Código em inglês: nomes de arquivos, variáveis, funções, classes, testes e comentários. Os nomes traduzem os termos de domínio da spec.
@@ -37,7 +49,8 @@ Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasi
 
 - Uma spec tem uma branch e um PR. Depois do merge, ela entrega valor pronto para produção.
 - A `main` não recebe commit direto. O que está nela funciona, passou no CI e cumpre as regras no que entrega.
-- O `/speckit-specify` começa rodando `git checkout main` e `git pull` e criando a branch `feature/<nome-curto>`, e só então gera a spec nela. Para o que não é spec, use `chore/<nome-curto>`. Se houver alterações sem commit, pare e avise a pessoa.
+- O `/speckit-specify` cria a branch `feature/<nome-curto>` a partir da `main` atualizada pelo hook `before_specify` (`.specify/extensions.yml` e skill `speckit-feature-branch`). Com alterações sem commit ou branch não mergeada, o hook para e pergunta.
+- Para mudanças sem spec, crie a branch a partir da `main` atualizada: `fix/<nome-curto>` para bugs e `chore/<nome-curto>` para o resto.
 - Faça commit, push ou PR apenas quando a etapa do fluxo pedir, nunca na `main`. O merge é sempre da pessoa.
 - Faça commits pequenos: um ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo de tarefas. O push e o PR ficam para a etapa 8.
 - Mensagens de commit e títulos de PR usam `tipo: descrição`, no presente do indicativo e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.
@@ -56,8 +69,8 @@ Um subagente é um agente separado, que trabalha sem ver esta conversa e devolve
 
 - A conversa principal usa Sonnet, e o `/code-review` roda nela.
 - No máximo dois subagentes ao mesmo tempo, para não travar a máquina. O limite está em `.claude/settings.json`.
-- O subagente segue as regras de branch e o registro de tempos, devolve um resumo curto e as perguntas em aberto, e não decide pela pessoa nem inicia a etapa seguinte.
-- Na implementação, o Haiku repete até as verificações do projeto, como lint e testes, passarem. Se a mesma falha persistir depois de 3 tentativas, ele para, registra e pergunta à pessoa se deve passar para Sonnet.
+- O subagente segue as regras de branch, devolve um resumo curto e as perguntas em aberto, e não decide pela pessoa nem inicia a etapa seguinte.
+- Na implementação, o Haiku repete até as verificações do projeto, como lint e testes, passarem. Se a mesma falha persistir depois de 3 tentativas, ele para e pergunta à pessoa se deve passar para Sonnet.
 
 Perguntas de subagentes: a conversa principal é o orquestrador. Ela mostra cada pergunta em aberto com uma recomendação, e a pessoa decide. Depois, grava a decisão no artefato da etapa antes de seguir, porque o próximo subagente não vê o chat. Perguntas da spec vão para o `/speckit-clarify`. Não rode `/speckit-specify` de novo para responder a uma pergunta, pois ele cria outra pasta de spec.
 
@@ -67,13 +80,5 @@ Liste aqui a ordem das specs. Os detalhes são decididos nas etapas do fluxo, e 
 
 ## Registro
 
-Ao iniciar e ao terminar cada etapa, obtenha o horário real com o comando `date` e registre em `docs/tempos.md`. Separe o tempo da IA do tempo humano e não estime valores. O tempo humano exato vem de `docs/human-review.md`, marcado pela pessoa com `/hr <etapa>` e `/hr end`. Sem essa marcação, ele é só um limite máximo.
-
-Registre também, em cada etapa, sem estimar:
-
-- **Consumo de 5 horas e semanal, no início e no fim:** leia de `.claude/usage.local.json`, gravado pela status line. Se o valor estiver `null` ou o arquivo não existir, escreva "não medido".
-  - **Início:** quem executa a etapa lê o arquivo antes de começar. Em etapas com `context: fork`, é o próprio subagente.
-  - **Fim:** a status line só regrava o arquivo depois de uma nova mensagem da IA. Por isso, o consumo do fim e o tempo humano pendentes são preenchidos no início da etapa seguinte, sem mensagem só para isso. O tempo humano vai do fim da etapa anterior ao início da seguinte, então é um limite máximo, que inclui pausas. Se `updated_at` for anterior ao fim da etapa, escreva "não medido" em vez de usar o valor antigo.
-- **Tokens por modelo:** rode `.claude/tokens-by-model.py "<início>" "<fim>"` com os horários da etapa e copie o resultado. Se não houver dados, escreva "não medido".
-
-Registre em `docs/diario.md` o que realmente aconteceu: o que a IA propôs, o que a pessoa mudou e por quê, surpresas e erros. Não invente nem suavize nada.
+- **Métricas:** não registre tempo nem consumo durante as etapas. O hook `before_specify` salva as métricas da branch mergeada em `docs/metrics/`, a partir das transcrições do Claude Code e do GitHub. Para gerar à mão, a pessoa roda `/metrics [branch]`.
+- **Diário:** registre em `docs/diario.md` o que realmente aconteceu: o que a IA propôs, o que a pessoa mudou e por quê, surpresas e erros. Não invente nem suavize nada.

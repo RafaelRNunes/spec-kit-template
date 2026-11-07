@@ -1,6 +1,6 @@
 # Modelo de projeto com Spec Kit e Claude Code
 
-Prepara qualquer projeto novo, em qualquer linguagem ou framework, com o padrão de trabalho: etapas com revisão humana, subagentes, modelo por etapa, medição de tempo e consumo, e convenções de código, commit e PR.
+Prepara qualquer projeto novo, em qualquer linguagem ou framework, com o padrão de trabalho: etapas com revisão humana, subagentes, modelo por etapa, métricas automáticas e convenções de código, commit e PR.
 
 **O passo a passo e o diagrama do fluxo estão no [GUIA.md](GUIA.md).**
 
@@ -23,9 +23,9 @@ O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copi
 | `CLAUDE.md` | Colaboração, etapas, convenções, Git, subagentes e registro |
 | `.claude/settings.json` | Sonnet na conversa principal, até 2 subagentes e status line |
 | `.claude/skills/speckit-*/SKILL.md` | Subagente e modelo de cada etapa |
-| `.claude/statusline.sh` | Grava os percentuais de 5 horas e semanal em um arquivo local |
-| `.claude/tokens-by-model.py` | Soma os tokens por modelo em um intervalo |
-| `/hr <etapa>` e `/hr end` | Medem o tempo real de revisão humana em `docs/human-review.md` |
+| `.claude/statusline.sh` | Mostra os percentuais de 5 horas e semanal |
+| `.specify/extensions.yml` e skill `speckit-feature-branch` | Antes do specify: atualizam a `main`, salvam as métricas da spec anterior e criam a branch |
+| `.claude/metrics.py` e `/metrics [branch]` | Métricas da branch, sem interação humana: tempo, tokens por modelo e PR, em `docs/metrics/` |
 | `.github/pull_request_template.md` | Corpo padrão do PR |
-| `docs/tempos.md` e `docs/diario.md` | Registros de cada etapa |
+| `docs/diario.md` | O que aconteceu em cada etapa |
 | `.specify/init-options.json` | Numeração das specs por horário |

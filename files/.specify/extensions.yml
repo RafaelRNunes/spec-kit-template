@@ -1,0 +1,7 @@
+hooks:
+  before_specify:
+    - extension: feature-branch
+      command: speckit.feature.branch
+      description: Update main, save the metrics of the merged branch and create the feature branch
+      optional: false
+      enabled: true

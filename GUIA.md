@@ -2,7 +2,7 @@
 
 Passo a passo para criar qualquer projeto com Spec Kit e Claude Code, em qualquer linguagem ou framework: a IA propõe e executa, e a pessoa decide.
 
-**Situação:** em validação. Já funcionou em uma spec real: especificação e plano em subagente com Sonnet, dúvidas na conversa principal e implementação de 36 tarefas com Haiku, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, o comando `/hr` e um ciclo completo até o merge.
+**Situação:** em validação. Já funcionou em uma spec real: especificação e plano em subagente com Sonnet, dúvidas na conversa principal e implementação de 36 tarefas com Haiku, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, o hook que cria a branch, o script de métricas em um ciclo novo e um ciclo completo até o merge.
 
 ## Fluxo
 
@@ -11,17 +11,17 @@ Em azul, o que a pessoa faz; em verde, o que a IA faz.
 ```mermaid
 flowchart TD
     A["./apply.sh e primeiro commit"]:::human --> B["/speckit-constitution"]:::ai
-    B --> C["/hr constitution: revisar as regras"]:::human
+    B --> C["Revisar as regras"]:::human
     C --> D["Definir a ordem das specs"]:::human
 
-    D --> F["/speckit-specify: cria a branch a partir da main atualizada e gera a spec"]:::ai
-    F --> G["/hr spec: revisar a spec"]:::human
+    D --> F["/speckit-specify: o hook atualiza a main, salva as métricas da spec anterior e cria a branch; depois gera a spec"]:::ai
+    F --> G["Revisar a spec"]:::human
     G --> H["/speckit-clarify: aplicar correções e decisões"]:::human
     H --> I{"Spec aprovada?"}:::human
     I -- Não --> H
     I -- Sim --> J["/speckit-plan"]:::ai
 
-    J --> K["/hr plan: revisar e conferir o plano"]:::human
+    J --> K["Revisar e conferir o plano"]:::human
     K --> L{"Plano aprovado?"}:::human
     L -- Não --> M["IA corrige o plano"]:::ai
     M --> K
@@ -39,12 +39,12 @@ flowchart TD
     R -- Sim --> T["/speckit-converge com Sonnet"]:::ai
 
     T --> T2["/code-review: revisão do código pela IA"]:::ai
-    T2 --> U["/hr code: ler o código e executar"]:::human
+    T2 --> U["Ler o código e executar"]:::human
     U --> V{"Código aprovado?"}:::human
     V -- Não --> Q
     V -- Sim --> W["Push e abertura do PR"]:::ai
     W --> X["CI roda em cada PR"]:::ai
-    X --> Y["/hr pr: revisar o PR e o CI"]:::human
+    X --> Y["Revisar o PR e o CI"]:::human
     Y --> Z{"Aprovado?"}:::human
     Z -- Não --> Q
     Z -- Sim --> AA["Merge feito pela pessoa"]:::human
@@ -106,6 +106,20 @@ Regra: **uma spec = uma branch = um PR = valor pronto para produção.**
 
 A base também vira spec quando descreve um comportamento, e não uma ferramenta. As tarefas de criar o projeto com o CLI e de configurar o CI aparecem depois, em `tasks.md`.
 
+Uma spec é pequena: entrega valor sozinha e é fácil de revisar. Não há limite de linhas. Se o specify gerar muitas histórias ou o plano ficar grande, divida em specs que ainda entreguem valor cada uma.
+
+### Mudanças sem spec
+
+O fluxo completo é para comportamento novo. O resto entra por um PR direto, com CI e revisão, e isso não é vibe coding: a spec continua sendo a referência, e o histórico fica nos commits e no PR.
+
+| Mudança | Branch | O que o PR traz |
+|---|---|---|
+| Bug | `fix/<nome-curto>` | O requisito da spec que quebrou, como `RF-009`, e um teste que falha sem a correção |
+| Ajuste sem comportamento novo (visual, refatoração, dependência) | `chore/<nome-curto>` | O que mudou e por quê |
+| Comportamento de uma feature existente | `chore/<nome-curto>` | A mudança e o `spec.md` da feature atualizado. Se for grande, vira spec nova |
+
+Lição de um projeto anterior: com uma segunda ferramenta só para mudanças, como o OpenSpec, ficavam dois fluxos para manter.
+
 ## 4. Ciclo de cada spec
 
 | # | Etapa | Comando | Quem produz | Sua parte |
@@ -125,7 +139,7 @@ O Spec Kit não tem um comando de revisão de código. O `/speckit-converge` con
 
 ### Spec
 
-O próprio `/speckit-specify` cria a branch a partir da `main` atualizada, seguindo a regra do `CLAUDE.md`, para a spec já nascer nela.
+O `/speckit-specify` roda antes o hook `before_specify`, registrado em `.specify/extensions.yml`. A skill `speckit-feature-branch` atualiza a `main`, salva as métricas da spec anterior se ela foi mergeada e cria `feature/<nome-curto>`. Com alterações sem commit ou branch não mergeada, ela para e pergunta. Quem executa o hook é a própria IA, seguindo a skill, então confira a branch no resumo.
 
 ```text
 /speckit-specify <Nome da capacidade>. <Quem> consegue <fazer o quê>, e <o que acontece
@@ -178,7 +192,7 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 | Dúvidas da spec | Sonnet | Conversa principal, porque depende de diálogo |
 | Implementação | Haiku, passando para Sonnet se a mesma falha persistir depois de 3 tentativas | Subagente |
 | Validação da IA (`/code-review`) | Sonnet, o modelo da conversa principal | Conversa principal, com revisores próprios |
-| `/hr` | Haiku | Subagente |
+| `/metrics` | Haiku | Subagente |
 
 - **Perguntas:** o subagente não vê o chat. Ele devolve as perguntas, o orquestrador mostra cada uma com uma recomendação, você decide, e a decisão vai para o artefato da etapa.
 - **Máquina:** o modelo roda nos servidores, mas build, testes e contêineres rodam localmente. Ajuste `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` em `.claude/settings.json`. O padrão do modelo é 2, e ainda não sabemos se esse limite cobre skills com fork.
@@ -193,17 +207,23 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 
 ## 8. Registros
 
-A IA preenche a cada etapa, seguindo o `CLAUDE.md`:
+Sem interação humana e sem registro durante as etapas:
 
-- **`docs/tempos.md`:** horários reais, tempo da IA, consumo e tokens por modelo.
-- **`docs/human-review.md`:** o tempo exato de revisão. Rode `/hr spec` ao começar (ou `plan`, `code`, `pr`) e `/hr end` ao terminar. Para uma pausa, rode `/hr end` e, depois, a etapa de novo. Sem essa marcação, o tempo humano é só um limite máximo.
+- **`docs/metrics/<branch>.md`:** gerado por `.claude/metrics.py` a partir das transcrições do Claude Code e do GitHub. O hook do specify salva o da spec anterior depois do merge, e `/metrics [branch]` gera à mão. Traz:
+  - tempo de relógio, do primeiro pedido ao merge;
+  - tempo da IA por etapa, do pedido à última resposta, incluindo esperas por permissão;
+  - intervalos entre os turnos;
+  - tokens por modelo;
+  - tempo do PR de aberto a merge, que funciona mesmo quando quem revisa é outra pessoa.
 - **`docs/diario.md`:** o que a IA propôs, o que você mudou e por quê, surpresas e erros.
 
-Os percentuais são da conta inteira e arredondados. Para comparar etapas, use os tokens e deixe só a sessão do projeto ativa durante a etapa.
+Uma etapa começa no pedido com o comando (`/speckit-plan`) e inclui as conversas seguintes até o próximo comando, como revisões e correções. Os intervalos incluem revisão, pausas e noites, então são um limite máximo do tempo humano.
+
+Uma regra que pedia à IA para registrar tempos e consumo a cada etapa foi abandonada: custava tempo e tokens em toda etapa, e o tempo humano continuava aproximado. Pelo mesmo motivo, o `/hr`, que marcava o início e o fim da revisão, também saiu.
 
 ## 9. Git
 
-- Branches a partir da `main` atualizada: `feature/<nome-curto>` para specs e `chore/<nome-curto>` para o resto.
+- Branches a partir da `main` atualizada: `feature/<nome-curto>` para specs, criada pelo hook, `fix/<nome-curto>` para bugs e `chore/<nome-curto>` para o resto.
 - A `main` não recebe commit direto.
 - Um commit ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo. Push e PR ficam para o final.
 - Commits e títulos de PR usam `tipo: descrição`, no presente e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.
