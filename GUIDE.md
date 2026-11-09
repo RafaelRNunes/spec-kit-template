@@ -34,11 +34,11 @@ flowchart TD
 
     Q --> R{"Lint and tests pass?"}:::ai
     R -- "No, up to 3 attempts" --> Q
-    R -- "Persistent failure" --> S["Person decides whether to switch to Sonnet"]:::human
+    R -- "Persistent failure" --> S["Switch to Sonnet: the person decides, or automatic if enabled"]:::human
     S --> Q
     R -- Yes --> T["/speckit-converge with Sonnet"]:::ai
 
-    T --> T2["/code-review"]:::ai
+    T --> T2["/code-review, automatic by default"]:::ai
     T2 --> U["Read the code and run it"]:::human
     U --> V{"Code approved?"}:::human
     V -- No --> Q
@@ -181,6 +181,7 @@ Before approving, check:
 Each command runs in its subagent and model, set in the skill frontmatter (`context: fork`, `background: false`, `model`). The table is in `CLAUDE.md`.
 
 - Build, tests and containers run locally. Tune `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` in `.claude/settings.json`.
+- The `Automation` section of `CLAUDE.md` turns on or off the automatic `/code-review` after converge (on by default) and the automatic Haiku-to-Sonnet switch after 3 failed attempts (off by default). Edit it at any time.
 - A Spec Kit upgrade can overwrite the frontmatter. Check with `git diff` and reapply.
 - Plan limits are a 5-hour window and a weekly limit, shared across models, subagents and Claude apps. Track them with `/usage` and the status line, and use `/clear` between tasks.
 

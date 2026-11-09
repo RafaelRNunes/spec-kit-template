@@ -24,7 +24,7 @@ Describe the project in one sentence here.
 | 3 | Plan | `/speckit-plan` | AI writes, person approves |
 | 4 | Tasks | `/speckit-tasks` and `/speckit-analyze` | AI |
 | 5 | Implementation | `/speckit-implement` and `/speckit-converge` | AI |
-| 6 | AI review | `/code-review` of the branch; the person decides what to fix | AI |
+| 6 | AI review | `/code-review` of the branch, automatic by default (see Automation); the person decides what to fix | AI |
 | 7 | Human review | Read the code and run it | Person |
 | 8 | Pull request | AI pushes and opens it; the person reviews and merges | Both |
 
@@ -68,6 +68,18 @@ When in doubt, ask the person which path to take.
 - Commit messages and PR titles use [Conventional Commits](https://www.conventionalcommits.org/): `type: description`, with `feat`, `fix`, `docs`, `test`, `refactor`, `build`, `ci` or `chore`.
 - The PR body follows `.github/pull_request_template.md`. Under "Verification", state what actually ran and what did not.
 
+## Automation
+
+Change `yes` or `no` at any time.
+
+- Run `/code-review` right after a successful `/speckit-converge`: yes
+- Switch implementation from Haiku to Sonnet after 3 failed attempts: no
+
+How to apply them:
+
+- **Code review:** when converge returns without issues, the main conversation runs `/code-review` and shows the findings; the person decides what to fix. Never run it from an `after_converge` hook: it would run inside the converge subagent, which cannot start the reviewers' subagents. When `no`, wait for the person to ask.
+- **Switch to Sonnet:** when `yes`, the main conversation reruns the remaining tasks in a Sonnet subagent and states the switch in the step summary. If Sonnet also fails, stop and ask. When `no`, ask the person whether to switch.
+
 ## Subagents
 
 A subagent works without seeing this conversation and returns its result to it.
@@ -83,7 +95,7 @@ A subagent works without seeing this conversation and returns its result to it.
 - The main conversation uses Sonnet and runs `/code-review`.
 - At most two subagents at a time, set in `.claude/settings.json`.
 - A subagent follows the branch rules, returns a short summary and its open questions, and never decides for the person or starts the next step.
-- During implementation, Haiku retries until lint and tests pass. If the same failure persists after 3 attempts, it stops and asks whether to switch to Sonnet.
+- During implementation, Haiku retries until lint and tests pass. If the same failure persists after 3 attempts, it stops; what happens next depends on Automation.
 - The main conversation shows each open question with a recommendation, and the person decides. Record the decision in the step's artifact before moving on, because the next subagent does not see the chat. Spec questions go to `/speckit-clarify`; never rerun `/speckit-specify`, which creates another spec directory.
 
 ## What will be built
