@@ -1,32 +1,30 @@
-# Modelo de projeto com Spec Kit e Claude Code
+# Spec Kit and Claude Code project template
 
-Prepara qualquer projeto novo, em qualquer linguagem ou framework, com o padrão de trabalho: etapas com revisão humana, subagentes, modelo por etapa, métricas automáticas e convenções de código, commit e PR.
+Sets up a new project, in any language or framework, with a workflow of human review stops, subagents, a model per step, automatic metrics and conventions for code, commits and PRs.
 
-**O passo a passo e o diagrama do fluxo estão no [GUIA.md](GUIA.md).**
+**The step-by-step guide and the flow diagram are in [GUIDE.md](GUIDE.md).**
 
-**Situação:** em validação. O guia indica o que já funcionou e o que ainda falta.
+## Usage
 
-## Uso
-
-Requer `specify`, `git`, `jq`, `python3` e Claude Code.
+Requires `specify`, `git`, `jq`, `python3` and Claude Code.
 
 ```bash
-./apply.sh ../meu-projeto
+./apply.sh ../my-project [language]
 ```
 
-O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copia os arquivos de `files/`, instala a extensão `bug`, ajusta as skills e a numeração, e não faz commit.
+The language applies to replies, constitution, specs, plans, docs, commits and PRs (default: English). Code is always in English. The script only accepts a new or empty directory, runs `specify init`, copies `files/`, installs the `bug` extension, adjusts skills and numbering, and commits nothing.
 
-## O que é configurado
+## What it configures
 
-| Arquivo | O que faz |
+| File | Purpose |
 |---|---|
-| `CLAUDE.md` | Colaboração, etapas, convenções, Git, subagentes e registro |
-| `.claude/settings.json` | Sonnet na conversa principal, até 2 subagentes e status line |
-| `.claude/skills/speckit-*/SKILL.md` | Subagente e modelo de cada etapa |
-| `.claude/statusline.sh` | Mostra os percentuais de 5 horas e semanal |
-| `.specify/extensions.yml` e skill `speckit-feature-branch` | Antes do specify e da correção de bug: atualizam a `main`, salvam as métricas da branch anterior e criam a branch |
-| Extensão `bug` do Spec Kit | Diagnóstico, correção e teste de bugs, em `.specify/bugs/<slug>/` |
-| `.claude/metrics.py` e `/metrics [branch]` | Métricas da branch, sem interação humana: tempo, tokens por modelo e PR, em `docs/metrics/` |
-| `.github/pull_request_template.md` | Corpo padrão do PR |
-| `docs/diario.md` | O que aconteceu em cada etapa |
-| `.specify/init-options.json` | Numeração das specs por horário |
+| `CLAUDE.md` | Collaboration, flow, kinds of change, conventions, Git, subagents and records |
+| `.claude/settings.json` | Sonnet in the main conversation, up to 2 subagents and the status line |
+| `.claude/skills/speckit-*/SKILL.md` | Subagent and model per step |
+| `.claude/statusline.sh` | 5-hour and weekly usage |
+| `.specify/extensions.yml` and the `speckit-feature-branch` skill | Before specify and bug fix: update `main`, save the previous branch's metrics and create the branch |
+| Spec Kit `bug` extension | Bug assessment, fix and test in `.specify/bugs/<slug>/` |
+| `.claude/metrics.py` and `/metrics [branch]` | Branch metrics with no human input: time, tokens by model and PR, in `docs/metrics/` |
+| `.github/pull_request_template.md` | PR body |
+| `docs/journal.md` | What happened at each step |
+| `.specify/init-options.json` | Specs numbered by timestamp |

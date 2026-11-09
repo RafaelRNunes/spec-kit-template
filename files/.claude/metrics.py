@@ -24,10 +24,10 @@ from datetime import datetime
 from pathlib import Path
 
 FIELDS = (
-    ("input_tokens", "entrada"),
-    ("output_tokens", "saída"),
-    ("cache_creation_input_tokens", "cache escrito"),
-    ("cache_read_input_tokens", "cache lido"),
+    ("input_tokens", "input"),
+    ("output_tokens", "output"),
+    ("cache_creation_input_tokens", "cache write"),
+    ("cache_read_input_tokens", "cache read"),
 )
 COMMAND = re.compile(r"(?:<command-name>|^)\s*(/[a-z][\w.:-]*)", re.MULTILINE)
 NOT_PROMPT = ("<local-command", "<task-notification", "<system-reminder")
@@ -95,7 +95,7 @@ def build_turns(sessions, branch):
                 current["branches"].add(record["gitBranch"])
     turns = [t for t in turns if branch in t["branches"]]
     turns.sort(key=lambda t: t["start"])
-    step = "conversa antes do primeiro comando"
+    step = "conversation before the first command"
     for turn in turns:
         step = turn["label"] = turn["label"] or step
     for turn, following in zip(turns, turns[1:] + [None]):
@@ -127,7 +127,7 @@ def sum_tokens(entries):
 
 def tokens_text(totals):
     if not totals:
-        return "não medido"
+        return "not measured"
     return "; ".join(
         f"{model}: " + ", ".join(f"{label} {values[field]}" for field, label in FIELDS)
         for model, values in sorted(totals.items())
@@ -158,7 +158,7 @@ def pull_request(branch):
 def main():
     root = run("git", "rev-parse", "--show-toplevel")
     if not root:
-        sys.exit("Erro: rode dentro do repositório do projeto.")
+        sys.exit("Error: run inside the project repository.")
     args = sys.argv[1:]
     save = "--save" in args
     args = [a for a in args if a != "--save"]
@@ -182,7 +182,7 @@ def report(root, branch):
     turns = build_turns(sessions, branch)
     entries = usage_records(sessions, subagent_records, branch)
     if not turns:
-        sys.exit(f"Erro: nenhum registro do Claude Code na branch {branch}.")
+        sys.exit(f"Error: no Claude Code records on branch {branch}.")
 
     pr = pull_request(branch)
     start = turns[0]["start"]
@@ -192,27 +192,27 @@ def report(root, branch):
     gaps = [t["gap"] for t in turns[:-1]]
 
     fmt = "%Y-%m-%d %H:%M:%S"
-    print(f"# Métricas: {branch}\n")
-    print(f"Gerado em {datetime.now().strftime(fmt)} por `.claude/metrics.py`, a partir das transcrições "
-          "do Claude Code e do GitHub. Os intervalos incluem revisão, pausas e noites: são limite máximo "
-          "do tempo humano, nunca o valor exato.\n")
-    print("## Resumo\n")
-    print("| Item | Valor |\n|---|---|")
-    print(f"| Primeiro pedido | {start.strftime(fmt)} |")
-    print(f"| Fim | {end.strftime(fmt)} ({'último registro, depois do merge' if merged and end > merged else 'merge do PR' if merged else 'último registro; sem merge'}) |")
-    print(f"| Tempo de relógio | {duration((end - start).total_seconds())} |")
-    print(f"| Tempo da IA | {duration(ai_time)} em {len(turns)} turnos |")
-    print(f"| Intervalos entre turnos | {duration(sum(gaps))} no total; o maior teve {duration(max(gaps, default=0))} |")
+    print(f"# Metrics: {branch}\n")
+    print(f"Generated on {datetime.now().strftime(fmt)} by `.claude/metrics.py` from Claude Code transcripts "
+          "and GitHub. Gaps include review, breaks and nights: they are an upper bound for human time, "
+          "never the exact value.\n")
+    print("## Summary\n")
+    print("| Item | Value |\n|---|---|")
+    print(f"| First prompt | {start.strftime(fmt)} |")
+    print(f"| End | {end.strftime(fmt)} ({'last record, after the merge' if merged and end > merged else 'PR merge' if merged else 'last record; not merged'}) |")
+    print(f"| Wall-clock time | {duration((end - start).total_seconds())} |")
+    print(f"| AI time | {duration(ai_time)} in {len(turns)} turns |")
+    print(f"| Gaps between turns | {duration(sum(gaps))} in total; longest {duration(max(gaps, default=0))} |")
     if pr:
         created = parse_time(pr["createdAt"])
-        review = duration((merged - created).total_seconds()) if merged else "sem merge"
-        print(f"| PR | [#{pr['number']}]({pr['url']}): de aberto a merge, {review}; "
-              f"{len(pr.get('reviews') or [])} revisões no GitHub |")
+        review = duration((merged - created).total_seconds()) if merged else "not merged"
+        print(f"| PR | [#{pr['number']}]({pr['url']}): open to merge, {review}; "
+              f"{len(pr.get('reviews') or [])} GitHub reviews |")
     else:
-        print("| PR | não encontrado ou `gh` indisponível |")
+        print("| PR | not found or `gh` unavailable |")
 
-    print("\n## Por etapa\n")
-    print("| Etapa | Turnos | Tempo da IA | Intervalo depois | Tokens por modelo |\n|---|---|---|---|---|")
+    print("\n## By step\n")
+    print("| Step | Turns | AI time | Gap after | Tokens by model |\n|---|---|---|---|---|")
     steps = {}
     for turn in turns:
         step = steps.setdefault(turn["label"], {"turns": 0, "ai": 0, "gap": 0, "entries": []})
@@ -224,8 +224,8 @@ def report(root, branch):
         print(f"| `{label}` | {step['turns']} | {duration(step['ai'])} | {duration(step['gap'])} | "
               f"{tokens_text(sum_tokens(step['entries']))} |")
 
-    print("\n## Tokens por modelo na branch\n")
-    print("| Modelo | " + " | ".join(label.capitalize() for _, label in FIELDS) + " |")
+    print("\n## Tokens by model on the branch\n")
+    print("| Model | " + " | ".join(label.capitalize() for _, label in FIELDS) + " |")
     print("|---|" + "---|" * len(FIELDS))
     for model, values in sorted(sum_tokens(entries).items()):
         print(f"| {model} | " + " | ".join(str(values[field]) for field, _ in FIELDS) + " |")

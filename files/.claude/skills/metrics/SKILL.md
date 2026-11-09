@@ -1,6 +1,6 @@
 ---
 name: metrics
-description: Gera o relatório de métricas de uma branch (tempo da IA, intervalos, tokens por modelo e PR) em docs/metrics/, sem interação humana.
+description: Writes the metrics report of a branch (AI time, gaps, tokens by model and PR) to docs/metrics/, with no human input.
 argument-hint: "[branch]"
 disable-model-invocation: true
 allowed-tools: Bash(.claude/metrics.py *)
@@ -9,4 +9,4 @@ background: false
 model: haiku
 ---
 
-Rode exatamente `.claude/metrics.py --save $ARGUMENTS` e devolva a saída do comando, sem fazer mais nada.
+Run exactly `.claude/metrics.py --save $ARGUMENTS` and return its output. Do nothing else.

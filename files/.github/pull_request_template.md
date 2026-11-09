@@ -1,15 +1,15 @@
-## Resumo
+## Summary
 
-O que muda e por quê. Se houver, cite a spec.
+What changes and why. Link the spec or bug, if any.
 
-## Verificação
+## Verification
 
-O que realmente rodou (lint, testes, CI, execução manual) e o que não rodou, com o motivo.
+What actually ran (lint, tests, CI, manual run) and what did not, with the reason.
 
-## Ainda sem teste
+## Not tested
 
-O que ficou sem validação. Remova esta seção se não houver nada.
+What is left without validation. Remove this section if empty.
 
-## Para a revisão
+## For the reviewer
 
-Decisões, riscos e pontos em que a pessoa deve prestar atenção. Remova esta seção se não houver nada.
+Decisions, risks and what deserves attention. Remove this section if empty.

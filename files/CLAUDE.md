@@ -1,96 +1,96 @@
 # {{NAME}}
 
-Descreva aqui, em uma frase, o que é o projeto. Responda em Português do Brasil.
+Describe the project in one sentence here.
 
-## Regras de colaboração
+## Language
 
-- A pessoa digita os comandos `/speckit-*`. Não execute um comando do Spec Kit que ela não pediu, nem gere os artefatos dele por conta própria.
-- Faça uma etapa por vez. Os pontos de parada obrigatórios, com revisão da pessoa, são a spec (depois do clarify), o plano, o diagnóstico de um bug e o PR. `/speckit-tasks` e `/speckit-analyze` seguem sem parar, a pessoa digita os dois comandos, e a IA só para se o analyze apontar problema crítico ou de severidade alta.
-- Uma aprovação vale apenas para a etapa revisada. "Segue" não autoriza as etapas seguintes.
-- Uma decisão sem resposta explícita continua em aberto. Pergunte, com a sua recomendação, em vez de aplicá-la.
-- Explique um termo novo antes de usá-lo.
+- Code in English: files, identifiers, tests and comments. Names translate the domain terms of the spec.
+- Replies, constitution, specs, plans, docs, commits and PRs in {{LANGUAGE}}.
 
-## Fluxo
+## Collaboration
 
-| # | Etapa | Comando | Quem faz |
+- The person types the `/speckit-*` commands. Never run a Spec Kit command they did not ask for, nor write its artifacts on your own.
+- One step at a time. Mandatory human review stops: the spec (after clarify), the plan, a bug assessment and the PR. `/speckit-tasks` and `/speckit-analyze` run without a stop, unless analyze reports a critical or high issue.
+- An approval covers only the reviewed step. "Go on" does not approve the next ones.
+- A decision without an explicit answer stays open. Ask, with your recommendation.
+
+## Flow
+
+| # | Step | Command | Who |
 |---|---|---|---|
-| 0 | Regras do projeto, alteradas quando necessário | `/speckit-constitution` | Pessoa e IA |
-| 1 | Especificação | `/speckit-specify` | Pessoa e IA |
-| 2 | Dúvidas da spec | `/speckit-clarify` | IA pergunta, pessoa responde |
-| 3 | Plano | `/speckit-plan` | IA gera, pessoa analisa e aprova |
-| 4 | Tarefas | `/speckit-tasks` e `/speckit-analyze` | IA gera e só para se houver problema crítico ou alto |
-| 5 | Implementação | `/speckit-implement` e `/speckit-converge` | IA |
-| 6 | Validação da IA | `/code-review` da branch, antes da revisão humana. A pessoa decide o que corrigir | IA |
-| 7 | Validação humana | Leitura do código e execução | Pessoa |
-| 8 | Pull request | IA faz push e abre o PR, pessoa revisa e faz o merge | Ambos |
+| 0 | Project rules, changed when needed | `/speckit-constitution` | Person and AI |
+| 1 | Spec | `/speckit-specify` | Person and AI |
+| 2 | Spec questions | `/speckit-clarify` | AI asks, person answers |
+| 3 | Plan | `/speckit-plan` | AI writes, person approves |
+| 4 | Tasks | `/speckit-tasks` and `/speckit-analyze` | AI |
+| 5 | Implementation | `/speckit-implement` and `/speckit-converge` | AI |
+| 6 | AI review | `/code-review` of the branch; the person decides what to fix | AI |
+| 7 | Human review | Read the code and run it | Person |
+| 8 | Pull request | AI pushes and opens it; the person reviews and merges | Both |
 
-Uma spec é pequena: entrega valor sozinha e é fácil de revisar. Se o specify gerar muitas histórias ou o plano ficar grande, sugira dividir em specs que ainda entreguem valor cada uma.
+A spec is small: it delivers value on its own and is easy to review. If specify produces many stories or the plan grows large, suggest splitting it into specs that each still deliver value.
 
-## Tipos de mudança
+## Kinds of change
 
-As specs seguem o modelo flow-forward do Spec Kit: depois do merge, uma pasta de `specs/` não é mais editada e fica como histórico. Uma mudança no que já foi entregue vira spec nova, que aponta para a anterior.
+Specs are flow-forward: after the merge, a `specs/` directory is never edited again and stays as history. A change to delivered work is a new spec that links to the previous one.
 
-| Mudança | Fluxo | Branch | Histórico |
+| Change | Flow | Branch | History |
 |---|---|---|---|
-| Funcionalidade nova ou melhoria | Fluxo completo | `feature/` | `specs/<pasta>/` |
-| Feature grande demais para uma spec | `roadmap.md` primeiro, depois uma spec por fatia | `feature/` em cada fatia | `specs/<épico>/roadmap.md` |
-| Tarefa técnica que precisa de plano | Fluxo completo, como spec técnica | `feature/` | `specs/<pasta>/` |
-| Bug: o código contraria uma spec | Extensão `bug` | `fix/` | `.specify/bugs/<slug>/` |
-| Tarefa técnica trivial | PR direto | `chore/` | Commits e PR |
+| New feature or improvement | Full flow | `feature/` | `specs/<dir>/` |
+| Feature too large for one spec | `roadmap.md` first, then one spec per slice | `feature/` per slice | `specs/<epic>/roadmap.md` |
+| Technical task that needs a plan | Full flow, as a technical spec | `feature/` | `specs/<dir>/` |
+| Bug: the code contradicts a spec | `bug` extension | `fix/` | `.specify/bugs/<slug>/` |
+| Trivial technical task | Direct PR | `chore/` | Commits and PR |
 
-- **Spec que altera outra:** a descrição passada ao `/speckit-specify` cita a spec anterior, e o `spec.md` começa com `Tipo: funcionalidade` ou `Tipo: técnica` e com `Altera: specs/<pasta>`, quando houver uma spec relacionada.
-- **Spec técnica:** quem usa é quem mantém ou opera o sistema, e os critérios de aceite são observáveis, como "os testes continuam passando" ou "o contrato da API não muda".
-- **Precisa de plano:** tem uma decisão a tomar ou mais de uma tarefa. Exemplos: refatorar um módulo, trocar uma biblioteca com breaking change. Sem plano: atualizar uma dependência patch, ajustar o CI, corrigir um texto.
-- **Bug ou mudança:** se o código contraria o que a spec acordou, é bug. Se o que foi acordado precisa mudar, é spec nova.
-- **Roadmap:** uma tabela com ID fixo (R1, R2...), intenção, o que entra e o que fica para outra fatia, dependências, status e o link da spec de cada fatia. Cada fatia entrega valor sozinha.
-- **Bug:** `/speckit-bug-assess` diagnostica sem alterar código, e a pessoa revisa o diagnóstico antes do `/speckit-bug-fix`. Depois vêm `/speckit-bug-test`, `/code-review`, validação humana e PR, como em uma spec.
+- **Spec that changes another:** the `/speckit-specify` description cites the previous spec, and `spec.md` starts with `Type: feature` or `Type: technical`, plus `Builds on: specs/<dir>` when there is a related spec.
+- **Technical spec:** the user is whoever maintains or operates the system, and acceptance criteria are observable, such as "tests still pass" or "the API contract does not change".
+- **Needs a plan:** it has a decision to make or more than one task, like refactoring a module or replacing a library with breaking changes. Trivial: a patch dependency bump, a CI tweak, a typo.
+- **Bug or change:** if the code contradicts what the spec agreed, it is a bug. If what was agreed must change, it is a new spec.
+- **Roadmap:** a table with a fixed ID (R1, R2...), intent, scope boundary, dependencies, status and the link to each slice's spec. Each slice delivers value on its own.
+- **Bug:** `/speckit-bug-assess` diagnoses without touching code, and the person reviews the assessment before `/speckit-bug-fix`. Then `/speckit-bug-test`, `/code-review`, human review and PR, as with a spec.
 
-Em caso de dúvida, pergunte à pessoa qual caminho seguir.
+When in doubt, ask the person which path to take.
 
-## Convenções
+## Conventions
 
-- Código em inglês: nomes de arquivos, variáveis, funções, classes, testes e comentários. Os nomes traduzem os termos de domínio da spec.
-- Documentação, specs, planos, commits e PRs em português.
-- A documentação oficial e o que o CLI do framework gera são a referência. Desvios precisam de justificativa na seção Complexity Tracking do plano.
-- Testes unitários isolam dependências externas com mocks. Testes de integração usam as dependências reais.
-- Nenhuma abstração, camada ou dependência sem um problema atual que a justifique. Cada biblioteca entra na spec que a usa.
-- Segredos nunca entram no repositório.
+- The official docs and what the framework CLI generates are the reference. Deviations are justified in the plan's Complexity Tracking.
+- Unit tests isolate external dependencies with mocks. Integration tests use the real ones.
+- No abstraction, layer or dependency without a current problem that justifies it. Each library comes in with the spec that uses it.
+- Secrets never go into the repository.
 
 ## Git
 
-- Uma spec tem uma branch e um PR. Depois do merge, ela entrega valor pronto para produção.
-- A `main` não recebe commit direto. O que está nela funciona, passou no CI e cumpre as regras no que entrega.
-- O `/speckit-specify` cria a branch `feature/<nome-curto>` a partir da `main` atualizada pelo hook `before_specify` (`.specify/extensions.yml` e skill `speckit-feature-branch`). Com alterações sem commit ou branch não mergeada, o hook para e pergunta.
-- O `/speckit-bug-fix` cria a branch `fix/<slug>` pelo mesmo hook, em `before_bug_fix`. Para uma tarefa técnica trivial, crie `chore/<nome-curto>` a partir da `main` atualizada.
-- Faça commit, push ou PR apenas quando a etapa do fluxo pedir, nunca na `main`. O merge é sempre da pessoa.
-- Faça commits pequenos: um ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo de tarefas. O push e o PR ficam para a etapa 8.
-- Mensagens de commit e títulos de PR usam `tipo: descrição`, no presente do indicativo e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.
-- O corpo do PR segue `.github/pull_request_template.md`. Em "Verificação", diga o que realmente rodou e o que não rodou.
+- One spec, one branch, one PR. After the merge, it delivers production-ready value.
+- No direct commits to `main`. What is on it works, passed CI and follows the rules.
+- The `before_specify` hook (`.specify/extensions.yml` and the `speckit-feature-branch` skill) updates `main` and creates `feature/<short-name>`. The `before_bug_fix` hook creates `fix/<slug>`. For a trivial technical task, create `chore/<short-name>` from an updated `main`.
+- Commit, push or open a PR only when the flow step calls for it. The merge is always the person's.
+- Small commits: one per approved step and, during implementation, one per task or small group of tasks. Push and PR at step 8.
+- Commit messages and PR titles use [Conventional Commits](https://www.conventionalcommits.org/): `type: description`, with `feat`, `fix`, `docs`, `test`, `refactor`, `build`, `ci` or `chore`.
+- The PR body follows `.github/pull_request_template.md`. Under "Verification", state what actually ran and what did not.
 
-## Subagentes
+## Subagents
 
-Um subagente é um agente separado, que trabalha sem ver esta conversa e devolve o resultado a ela.
+A subagent works without seeing this conversation and returns its result to it.
 
-| Skill | Execução | Modelo |
+| Skill | Runs in | Model |
 |---|---|---|
-| `speckit-constitution` | Subagente | Opus |
-| `speckit-specify`, `speckit-plan`, `speckit-tasks`, `speckit-analyze`, `speckit-checklist` e `speckit-converge` | Subagente | Sonnet |
-| `speckit-implement` | Subagente | Haiku |
-| `speckit-clarify` e `speckit-bug-assess` | Conversa principal | Sonnet |
-| `speckit-bug-fix` e `speckit-bug-test` | Subagente | Sonnet |
+| `speckit-constitution` | Subagent | Opus |
+| `speckit-specify`, `speckit-plan`, `speckit-tasks`, `speckit-analyze`, `speckit-checklist`, `speckit-converge` | Subagent | Sonnet |
+| `speckit-implement` | Subagent | Haiku |
+| `speckit-clarify`, `speckit-bug-assess` | Main conversation | Sonnet |
+| `speckit-bug-fix`, `speckit-bug-test` | Subagent | Sonnet |
 
-- A conversa principal usa Sonnet, e o `/code-review` roda nela.
-- No máximo dois subagentes ao mesmo tempo, para não travar a máquina. O limite está em `.claude/settings.json`.
-- O subagente segue as regras de branch, devolve um resumo curto e as perguntas em aberto, e não decide pela pessoa nem inicia a etapa seguinte.
-- Na implementação, o Haiku repete até as verificações do projeto, como lint e testes, passarem. Se a mesma falha persistir depois de 3 tentativas, ele para e pergunta à pessoa se deve passar para Sonnet.
+- The main conversation uses Sonnet and runs `/code-review`.
+- At most two subagents at a time, set in `.claude/settings.json`.
+- A subagent follows the branch rules, returns a short summary and its open questions, and never decides for the person or starts the next step.
+- During implementation, Haiku retries until lint and tests pass. If the same failure persists after 3 attempts, it stops and asks whether to switch to Sonnet.
+- The main conversation shows each open question with a recommendation, and the person decides. Record the decision in the step's artifact before moving on, because the next subagent does not see the chat. Spec questions go to `/speckit-clarify`; never rerun `/speckit-specify`, which creates another spec directory.
 
-Perguntas de subagentes: a conversa principal é o orquestrador. Ela mostra cada pergunta em aberto com uma recomendação, e a pessoa decide. Depois, grava a decisão no artefato da etapa antes de seguir, porque o próximo subagente não vê o chat. Perguntas da spec vão para o `/speckit-clarify`. Não rode `/speckit-specify` de novo para responder a uma pergunta, pois ele cria outra pasta de spec.
+## What will be built
 
-## O que será construído
+List the order of the specs here, or point to `roadmap.md`.
 
-Liste aqui a ordem das specs, ou aponte para o `roadmap.md`. Os detalhes são decididos nas etapas do fluxo, e cada biblioteca entra na spec que a usa.
+## Records
 
-## Registro
-
-- **Métricas:** não registre tempo nem consumo durante as etapas. O hook `before_specify` salva as métricas da branch mergeada em `docs/metrics/`, a partir das transcrições do Claude Code e do GitHub. Para gerar à mão, a pessoa roda `/metrics [branch]`.
-- **Diário:** registre em `docs/diario.md` o que realmente aconteceu: o que a IA propôs, o que a pessoa mudou e por quê, surpresas e erros. Não invente nem suavize nada.
+- **Metrics:** never log time or usage during the steps. The hooks save the merged branch's metrics to `docs/metrics/` from Claude Code transcripts and GitHub. To generate them by hand, the person runs `/metrics [branch]`.
+- **Journal:** in `docs/journal.md`, record what actually happened: what the AI proposed, what the person changed and why, surprises and mistakes.
