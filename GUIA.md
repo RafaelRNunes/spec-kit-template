@@ -2,7 +2,7 @@
 
 Passo a passo para criar qualquer projeto com Spec Kit e Claude Code, em qualquer linguagem ou framework: a IA propõe e executa, e a pessoa decide.
 
-**Situação:** em validação. Já funcionou em uma spec real: especificação e plano em subagente com Sonnet, dúvidas na conversa principal e implementação de 36 tarefas com Haiku, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, o hook que cria a branch, o script de métricas em um ciclo novo e um ciclo completo até o merge.
+**Situação:** em validação. Já funcionou em uma spec real: especificação e plano em subagente com Sonnet, dúvidas na conversa principal e implementação de 36 tarefas com Haiku, a partir de tarefas detalhadas pelo Sonnet. Ainda falta validar o limite de subagentes, o hook que cria a branch, o script de métricas em um ciclo novo, um ciclo completo até o merge, a extensão `bug`, uma spec técnica e uma spec que altera outra.
 
 ## Fluxo
 
@@ -84,9 +84,13 @@ decididas>. A documentação oficial e o que o CLI do framework gera são a refe
 desvios precisam de justificativa. Código em inglês e documentação em português. Todo
 comportamento novo tem teste: testes unitários isolam dependências externas com mocks, e
 testes de integração usam as dependências reais. Lint e testes rodam no CI em cada PR.
-Nenhuma abstração sem um problema atual que a justifique. Regras do projeto: <regras
-específicas e verificáveis da arquitetura>.
+Nenhuma abstração sem um problema atual que a justifique. As specs seguem o modelo
+flow-forward: depois do merge, uma pasta de specs não é editada, e uma mudança vira spec
+nova que aponta para a anterior. Regras do projeto: <regras específicas e verificáveis da
+arquitetura>.
 ```
+
+A documentação do Spec Kit pede para registrar na constitution como as specs são mantidas, porque a ferramenta não tem um padrão ([persisting-specs](https://github.com/github/spec-kit/blob/main/docs/how-to/persisting-specs.md)).
 
 Para decidir se uma regra entra, pergunte:
 
@@ -108,17 +112,46 @@ A base também vira spec quando descreve um comportamento, e não uma ferramenta
 
 Uma spec é pequena: entrega valor sozinha e é fácil de revisar. Não há limite de linhas. Se o specify gerar muitas histórias ou o plano ficar grande, divida em specs que ainda entreguem valor cada uma.
 
-### Mudanças sem spec
+### Tipos de mudança
 
-O fluxo completo é para comportamento novo. O resto entra por um PR direto, com CI e revisão, e isso não é vibe coding: a spec continua sendo a referência, e o histórico fica nos commits e no PR.
+O Spec Kit não escolhe por você como manter as specs. A documentação descreve quatro modelos, e este guia usa o **flow-forward**: depois do merge, uma pasta de `specs/` não é editada e vira histórico. Uma mudança no que já foi entregue vira spec nova, que aponta para a anterior, e o agente consegue seguir a sequência. Os outros modelos são editar o `spec.md` existente (living spec), deixar spec e código se ajustarem (flow-back) ou apagar as specs depois da entrega (constitution-only, usado pelo próprio repositório do Spec Kit).
 
-| Mudança | Branch | O que o PR traz |
-|---|---|---|
-| Bug | `fix/<nome-curto>` | O requisito da spec que quebrou, como `RF-009`, e um teste que falha sem a correção |
-| Ajuste sem comportamento novo (visual, refatoração, dependência) | `chore/<nome-curto>` | O que mudou e por quê |
-| Comportamento de uma feature existente | `chore/<nome-curto>` | A mudança e o `spec.md` da feature atualizado. Se for grande, vira spec nova |
+| Mudança | Fluxo | Branch | Histórico | Origem |
+|---|---|---|---|---|
+| Funcionalidade nova ou melhoria | Fluxo completo | `feature/` | `specs/<pasta>/` | Spec Kit |
+| Feature grande demais para uma spec | `roadmap.md`, depois uma spec por fatia | `feature/` em cada fatia | `specs/<épico>/roadmap.md` | Spec Kit ([spec of specs](https://github.com/github/spec-kit/blob/main/docs/how-to/spec-of-specs.md)) |
+| Bug: o código contraria uma spec | Extensão `bug` | `fix/` | `.specify/bugs/<slug>/` | Spec Kit ([bugfix](https://github.com/github/spec-kit/blob/main/docs/guides/bugfix.md)) |
+| Tarefa técnica que precisa de plano | Fluxo completo, como spec técnica | `feature/` | `specs/<pasta>/` | Este modelo |
+| Tarefa técnica trivial | PR direto | `chore/` | Commits e PR | Este modelo |
+
+**Spec que altera outra.** Cite a spec anterior na descrição do `/speckit-specify`. O `spec.md` começa com duas linhas: `Tipo: funcionalidade` ou `Tipo: técnica`, e `Altera: specs/<pasta>`, quando houver uma spec relacionada.
+
+**Feature grande.** A documentação chama de "spec of specs", e o equivalente no Jira é o épico. Antes das specs, um `roadmap.md` lista as fatias em uma tabela: ID fixo (R1, R2...), intenção, o que entra e o que fica para outra fatia, dependências, status e o link da spec de cada fatia. Cada fatia é completa e entrega valor sozinha: "cadastrar produto com nome e preço" vai para produção, e "acrescentar categoria" vem na fatia seguinte. Não há comando para isso. A própria documentação recomenda usar só quando a feature não cabe em uma spec.
+
+**Bug ou mudança.** Se o código contraria o que a spec acordou, é bug. Se o que foi acordado precisa mudar, é spec nova.
+
+**Tarefa técnica.** O Spec Kit não trata desse caso. No mercado, ela é um item próprio do backlog: chore no Pivotal Tracker, task no Jira, enabler story no SAFe. O critério deste modelo:
+
+- **Precisa de plano** (tem uma decisão ou mais de uma tarefa, como refatorar um módulo ou trocar uma biblioteca com breaking change): spec técnica. Quem usa é quem mantém ou opera o sistema, e os critérios de aceite são observáveis, como "os testes continuam passando" ou "o contrato da API não muda".
+- **Não precisa de plano** (atualizar uma dependência patch, ajustar o CI, corrigir um texto): PR `chore/` direto, com o motivo na descrição. É feito com IA e revisão, o que não é vibe coding: vibe coding é aceitar código sem ler.
 
 Lição de um projeto anterior: com uma segunda ferramenta só para mudanças, como o OpenSpec, ficavam dois fluxos para manter.
+
+### Ciclo de um bug
+
+```mermaid
+flowchart TD
+    A["/speckit-bug-assess: diagnóstico sem alterar código"]:::ai --> B{"Diagnóstico aprovado?"}:::human
+    B -- Não --> A
+    B -- Sim --> C["/speckit-bug-fix: o hook cria fix/slug; depois corrige"]:::ai
+    C --> D["/speckit-bug-test: reproduz de novo e registra a evidência"]:::ai
+    D --> E["/code-review, validação humana e PR, como em uma spec"]:::human
+
+    classDef human fill:#dbeafe,stroke:#1d4ed8,color:#1e3a8a
+    classDef ai fill:#dcfce7,stroke:#15803d,color:#14532d
+```
+
+O diagnóstico, a correção e o teste ficam em `.specify/bugs/<slug>/` e entram no PR. O resultado do teste é `verified`, `partial` ou `failed`.
 
 ## 4. Ciclo de cada spec
 
@@ -189,7 +222,8 @@ Cada comando digitado roda direto no subagente, configurado no frontmatter da sk
 | Conversa principal (orquestrador) | Sonnet | - |
 | Constitution | Opus | Subagente |
 | Spec, plano, tarefas, análise e converge | Sonnet | Subagente |
-| Dúvidas da spec | Sonnet | Conversa principal, porque depende de diálogo |
+| Dúvidas da spec e diagnóstico de bug | Sonnet | Conversa principal, porque dependem de diálogo |
+| Correção e teste de bug | Sonnet | Subagente |
 | Implementação | Haiku, passando para Sonnet se a mesma falha persistir depois de 3 tentativas | Subagente |
 | Validação da IA (`/code-review`) | Sonnet, o modelo da conversa principal | Conversa principal, com revisores próprios |
 | `/metrics` | Haiku | Subagente |
@@ -223,7 +257,7 @@ Uma regra que pedia à IA para registrar tempos e consumo a cada etapa foi aband
 
 ## 9. Git
 
-- Branches a partir da `main` atualizada: `feature/<nome-curto>` para specs, criada pelo hook, `fix/<nome-curto>` para bugs e `chore/<nome-curto>` para o resto.
+- Branches a partir da `main` atualizada: `feature/<nome-curto>` para specs e `fix/<slug>` para bugs, criadas pelo hook, e `chore/<nome-curto>` para tarefas técnicas triviais.
 - A `main` não recebe commit direto.
 - Um commit ao fim de cada etapa aprovada e, na implementação, um por tarefa ou pequeno grupo. Push e PR ficam para o final.
 - Commits e títulos de PR usam `tipo: descrição`, no presente e em português, como `feat: adiciona cadastro`. Tipos: `feat`, `fix`, `docs`, `test`, `refactor` e `chore`.

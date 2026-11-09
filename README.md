@@ -14,7 +14,7 @@ Requer `specify`, `git`, `jq`, `python3` e Claude Code.
 ./apply.sh ../meu-projeto
 ```
 
-O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copia os arquivos de `files/`, ajusta as skills e a numeração, e não faz commit.
+O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copia os arquivos de `files/`, instala a extensão `bug`, ajusta as skills e a numeração, e não faz commit.
 
 ## O que é configurado
 
@@ -24,7 +24,8 @@ O script só aceita um diretório novo ou vazio. Ele roda o `specify init`, copi
 | `.claude/settings.json` | Sonnet na conversa principal, até 2 subagentes e status line |
 | `.claude/skills/speckit-*/SKILL.md` | Subagente e modelo de cada etapa |
 | `.claude/statusline.sh` | Mostra os percentuais de 5 horas e semanal |
-| `.specify/extensions.yml` e skill `speckit-feature-branch` | Antes do specify: atualizam a `main`, salvam as métricas da spec anterior e criam a branch |
+| `.specify/extensions.yml` e skill `speckit-feature-branch` | Antes do specify e da correção de bug: atualizam a `main`, salvam as métricas da branch anterior e criam a branch |
+| Extensão `bug` do Spec Kit | Diagnóstico, correção e teste de bugs, em `.specify/bugs/<slug>/` |
 | `.claude/metrics.py` e `/metrics [branch]` | Métricas da branch, sem interação humana: tempo, tokens por modelo e PR, em `docs/metrics/` |
 | `.github/pull_request_template.md` | Corpo padrão do PR |
 | `docs/diario.md` | O que aconteceu em cada etapa |

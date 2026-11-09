@@ -25,6 +25,7 @@ specify init "$target" --integration claude --non-interactive
 cp -R "$template/files/." "$target/"
 name="$(basename "$(cd "$target" && pwd)")"
 sed -i "s/{{NAME}}/$name/" "$target/CLAUDE.md"
+(cd "$target" && specify extension add bug >/dev/null)
 
 python3 - "$target" <<'PY'
 import json
@@ -49,6 +50,9 @@ SKILLS = {
     "speckit-converge": {**FORK, "model": "sonnet"},
     "speckit-implement": {**FORK, "model": "haiku"},
     "speckit-clarify": {"model": "sonnet"},
+    "speckit-bug-assess": {"model": "sonnet"},
+    "speckit-bug-fix": {**FORK, "model": "sonnet"},
+    "speckit-bug-test": {**FORK, "model": "sonnet"},
 }
 
 for skill, fields in SKILLS.items():
