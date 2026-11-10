@@ -2,6 +2,10 @@
 
 Sets up a new project, in any language or framework, with a workflow of human review stops, subagents, a model per step, automatic metrics and conventions for code, commits and PRs.
 
+<p align="center"><img src="assets/spec-cycle.png" alt="The spec cycle: specify, clarify, plan, plan review, tasks and analyze, implement with Haiku, converge, automatic code review, human review and pull request, around the constitution" width="600"></p>
+
+Blue steps are the person's, green steps are the AI's. One spec = one branch = one PR = production-ready value.
+
 **The step-by-step guide and the flow diagram are in [GUIDE.md](GUIDE.md).**
 
 ## Usage
