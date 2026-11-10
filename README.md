@@ -8,6 +8,8 @@ Blue steps are the person's, green steps are the AI's. One spec = one branch = o
 
 **The step-by-step guide and the flow diagram are in [GUIDE.md](GUIDE.md).**
 
+The story behind it: [LinkedIn post](https://www.linkedin.com/feed/update/urn:li:activity:7525892151277441024/) (in Portuguese).
+
 ## Usage
 
 Requires `specify`, `git`, `jq`, `python3` and Claude Code.
