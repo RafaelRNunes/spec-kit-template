@@ -28,3 +28,7 @@ The language tag ([BCP 47](https://www.rfc-editor.org/info/bcp47), like `en` or 
 | `.github/pull_request_template.md` | PR body |
 | `docs/journal.md` | What happened at each step |
 | `.specify/init-options.json` | Specs numbered by timestamp |
+
+## License
+
+[MIT](LICENSE).
