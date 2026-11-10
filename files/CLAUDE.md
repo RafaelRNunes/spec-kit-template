@@ -5,7 +5,7 @@ Describe the project in one sentence here.
 ## Language
 
 - Code in English: files, identifiers, tests and comments. Names translate the domain terms of the spec.
-- Replies, constitution, specs, plans, docs, commits and PRs in {{LANGUAGE}}.
+- Replies, constitution, specs, plans, docs, commits and PRs in the language with BCP 47 tag `{{LANGUAGE}}`.
 
 ## Collaboration
 

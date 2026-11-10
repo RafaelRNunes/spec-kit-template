@@ -59,8 +59,8 @@ flowchart TD
 ## 1. Set up the project
 
 ```bash
-./apply.sh ../my-project            # artifacts in English
-./apply.sh ../my-project Portuguese # or any other language
+./apply.sh ../my-project        # artifacts in English (en)
+./apply.sh ../my-project pt-BR  # or any BCP 47 tag: en-GB, es, fr...
 cd ../my-project
 ```
 
