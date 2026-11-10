@@ -12,7 +12,7 @@ Requires `specify`, `git`, `jq`, `python3` and Claude Code.
 ./apply.sh ../my-project [language-tag]
 ```
 
-The language tag ([BCP 47](https://www.rfc-editor.org/info/bcp47), like `en-US`, `en-GB`, `pt-BR`, `ja`, `zh-Hans`) applies to replies, constitution, specs, plans, docs, commits and PRs (default: `en`). Code is always in English. The script only accepts a new or empty directory, runs `specify init`, copies `files/`, installs the `bug` extension, adjusts skills and numbering, and commits nothing.
+The language tag ([BCP 47](https://www.rfc-editor.org/info/bcp47), like `en` or `pt-BR`) applies to replies, constitution, specs, plans, docs, commits and PRs (default: `en`). Code is always in English. The script only accepts a new or empty directory, runs `specify init`, copies `files/`, installs the `bug` extension, adjusts skills and numbering, and commits nothing.
 
 ## What it configures
 

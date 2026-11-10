@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 # Prepares a new project with Spec Kit and the workflow of this template.
 # Usage: ./apply.sh <project-path> [language-tag]
-# The language tag (BCP 47, like en, en-GB, pt-BR, es) applies to replies, constitution,
+# The language tag (BCP 47, like en or pt-BR) applies to replies, constitution,
 # specs, plans, docs, commits and PRs. Code is always in English. Default: en.
 set -euo pipefail
 
 if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
-  echo "Usage: $0 <project-path> [language-tag, like en-US, en-GB, pt-BR, ja, zh-Hans]" >&2
+  echo "Usage: $0 <project-path> [language-tag, like en or pt-BR]" >&2
   exit 1
 fi
 
 template="$(cd "$(dirname "$0")" && pwd)"
 target="$1"
 language="${2:-en}"
-# Language, optional script and optional region: en, en-GB, pt-BR, ja, zh-Hans, zh-Hant-TW, es-419.
+# Any BCP 47 tag: language, optional script and optional region.
 if ! [[ "$language" =~ ^([A-Za-z]{2,3})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?$ ]]; then
-  echo "Error: invalid language tag: $language. Use a BCP 47 tag, like en, en-GB, pt-BR, ja or zh-Hans." >&2
+  echo "Error: invalid language tag: $language. Use a BCP 47 tag, like en or pt-BR." >&2
   exit 1
 fi
 script="${BASH_REMATCH[3],,}"

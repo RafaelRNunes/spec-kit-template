@@ -60,7 +60,7 @@ flowchart TD
 
 ```bash
 ./apply.sh ../my-project        # artifacts in English (en)
-./apply.sh ../my-project pt-BR  # or any BCP 47 tag: en-GB, ja, zh-Hans...
+./apply.sh ../my-project pt-BR  # or any other BCP 47 language tag
 cd ../my-project
 ```
 
