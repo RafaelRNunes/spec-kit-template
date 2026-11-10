@@ -6,20 +6,21 @@
 set -euo pipefail
 
 if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
-  echo "Usage: $0 <project-path> [language-tag, like en, en-GB, pt-BR]" >&2
+  echo "Usage: $0 <project-path> [language-tag, like en-US, en-GB, pt-BR, ja, zh-Hans]" >&2
   exit 1
 fi
 
 template="$(cd "$(dirname "$0")" && pwd)"
 target="$1"
 language="${2:-en}"
-if ! [[ "$language" =~ ^[A-Za-z]{2,3}(-[A-Za-z]{2}|-[0-9]{3})?$ ]]; then
-  echo "Error: invalid language tag: $language. Use a BCP 47 tag, like en, en-US, en-GB or pt-BR." >&2
+# Language, optional script and optional region: en, en-GB, pt-BR, ja, zh-Hans, zh-Hant-TW, es-419.
+if ! [[ "$language" =~ ^([A-Za-z]{2,3})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?$ ]]; then
+  echo "Error: invalid language tag: $language. Use a BCP 47 tag, like en, en-GB, pt-BR, ja or zh-Hans." >&2
   exit 1
 fi
-primary="${language%%-*}"
-region="${language#"$primary"}"
-language="${primary,,}${region^^}"
+script="${BASH_REMATCH[3],,}"
+region="${BASH_REMATCH[5]^^}"
+language="${BASH_REMATCH[1],,}${script:+-${script^}}${region:+-$region}"
 
 if [ -e "$target" ] && [ -n "$(ls -A "$target")" ]; then
   echo "Error: $target exists and is not empty. The template only applies to a new directory." >&2
